@@ -32,7 +32,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resume" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/MRC" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -176,7 +176,7 @@
       <workItem from="1629034859304" duration="9908000" />
       <workItem from="1629092820631" duration="9692000" />
       <workItem from="1629116506743" duration="558000" />
-      <workItem from="1630430634587" duration="318000" />
+      <workItem from="1630430634587" duration="727000" />
     </task>
     <servers />
   </component>
