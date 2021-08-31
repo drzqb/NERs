@@ -4,3 +4,4 @@
     
     resume: 简历
     
+    MRC: MRC NER
