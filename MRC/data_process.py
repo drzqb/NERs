@@ -58,13 +58,35 @@ def mrc(filepath, tfrecordfilepath):
         print("样本数：", m_samples)
 
 
+def rewrite(sourcefilepath, destfilepath):
+    fw = open(destfilepath, "w", encoding="utf-8")
+
+    with open(sourcefilepath, "r", encoding="utf-8") as fr:
+        for line in tqdm(fr):
+            line = line.rstrip().split("\t")
+
+            char = line[0].split("\x02")
+            label = line[1].split("\x02")
+
+            fw.write("".join(char) + "\t" + " ".join(label) + "\n")
+
+    fw.close()
+
+
 if __name__ == "__main__":
-    mrc("data/OriginalFiles/msra_ner/train/part.0",
-        "data/TFRecordFiles/mrc_train.tfrecord",  # 20864
-        )
-    mrc("data/OriginalFiles/msra_ner/dev/part.0",
-        "data/TFRecordFiles/mrc_dev.tfrecord",  # 2318
-        )
-    mrc("data/OriginalFiles/msra_ner/test/part.0",
-        "data/TFRecordFiles/mrc_test.tfrecord",  # 4636
-        )
+    # mrc("data/OriginalFiles/msra_ner/train/part.0",
+    #     "data/TFRecordFiles/mrc_train.tfrecord",  # 20864
+    #     )
+    # mrc("data/OriginalFiles/msra_ner/dev/part.0",
+    #     "data/TFRecordFiles/mrc_dev.tfrecord",  # 2318
+    #     )
+    # mrc("data/OriginalFiles/msra_ner/test/part.0",
+    #     "data/TFRecordFiles/mrc_test.tfrecord",  # 4636
+    #     )
+
+    # rewrite("data/OriginalFiles/msra_ner/train/part.0",
+    #         "data/OriginalFiles/msra_ner/train/part.txt", )
+    rewrite("data/OriginalFiles/msra_ner/dev/part.0",
+            "data/OriginalFiles/msra_ner/dev/part.txt", )
+    rewrite("data/OriginalFiles/msra_ner/test/part.0",
+            "data/OriginalFiles/msra_ner/test/part.txt", )

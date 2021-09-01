@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
-      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MRC/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/NERs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NERs.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/data/OriginalFiles/msra_ner/dev/part.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/data/OriginalFiles/msra_ner/test/part.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/data/OriginalFiles/msra_ner/train/part.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MRC/data_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/MRC/data_process.py" afterDir="false" />
     </list>
@@ -50,7 +50,7 @@
       <recent name="D:\pythonwork\NERs\medical" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.data_process (1)">
     <configuration name="bertcrf" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="NERs" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -163,9 +163,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.data_process (1)" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.mrc_bertline" />
-        <item itemvalue="Python.data_process (1)" />
         <item itemvalue="Python.bertcrf" />
         <item itemvalue="Python.bertlinear" />
       </list>
@@ -187,7 +187,7 @@
       <workItem from="1630430634587" duration="759000" />
       <workItem from="1630456819230" duration="1084000" />
       <workItem from="1630459594094" duration="1648000" />
-      <workItem from="1630474412453" duration="8356000" />
+      <workItem from="1630474412453" duration="10585000" />
     </task>
     <servers />
   </component>
@@ -202,22 +202,22 @@
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
     <state x="1157" y="311" key="FileChooserDialogImpl/0.0.2752.1112@0.0.2752.1112" timestamp="1629098911085" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.bottom" timestamp="1630483024489">
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom" timestamp="1630486122595">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1630483024489" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.center" timestamp="1630483024489">
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1630486122595" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.center" timestamp="1630486122595">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1630483024489" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.left" timestamp="1630483024489">
+    <state width="2753" height="1056" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1630486122595" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.left" timestamp="1630486122595">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1630483024489" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.right" timestamp="1630483024489">
+    <state width="2753" height="1056" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1630486122595" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right" timestamp="1630486122595">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1630483024489" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1630486122595" />
     <state x="878" y="200" key="SettingsEditor" timestamp="1630457904497">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
@@ -240,6 +240,6 @@
     <SUITE FILE_PATH="coverage/NERs$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1630402603262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1630482784337" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$bertlinear.coverage" NAME="bertlinear Coverage Results" MODIFIED="1629102368897" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resume" />
-    <SUITE FILE_PATH="coverage/NERs$data_process__1_.coverage" NAME="data_process (1) Coverage Results" MODIFIED="1630478710510" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$data_process__1_.coverage" NAME="data_process (1) Coverage Results" MODIFIED="1630486115715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
   </component>
 </project>
