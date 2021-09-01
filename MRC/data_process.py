@@ -18,58 +18,53 @@ def mrc(filepath, tfrecordfilepath):
     m_samples = 0
 
     with open(filepath, "r", encoding="utf-8") as fr:
-        sent2id = [101]
-        label2id = []
-
         for line in tqdm(fr):
-            if line.strip() == "":
-                sent2id.append(102)
+            sent2id = [101]
+            line = line.rstrip().split("\t")
 
-                assert len(sent2id) == len(label2id) + 2
+            char = line[0].split("\x02")
+            label = line[1].split("\x02")
 
-                sen_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in sent2id]
+            if len(char) > 200:
+                char = char[:200]
+                label = label[:200]
 
-                lab_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[lab_])) for lab_ in label2id]
+            sent2id.extend([char_dict.get(c, char_dict["[UNK]"]) for c in char])
 
-                seq_example = tf.train.SequenceExample(
-                    feature_lists=tf.train.FeatureLists(feature_list={
-                        'sen': tf.train.FeatureList(feature=sen_feature),
-                        'lab': tf.train.FeatureList(feature=lab_feature)
-                    })
-                )
+            label2id = [label_dict[l] for l in label]
 
-                serialized = seq_example.SerializeToString()
+            sent2id.append(102)
 
-                writer.write(serialized)
-                m_samples += 1
+            assert len(sent2id) == len(label2id) + 2
 
-                print("样本数：", m_samples)
+            sen_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in sent2id]
 
-                sent2id = [101]
-                label2id = []
+            lab_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[lab_])) for lab_ in label2id]
 
-            else:
-                line = line.rstrip().split(" ")
+            seq_example = tf.train.SequenceExample(
+                feature_lists=tf.train.FeatureLists(feature_list={
+                    'sen': tf.train.FeatureList(feature=sen_feature),
+                    'lab': tf.train.FeatureList(feature=lab_feature)
+                })
+            )
 
-                char = line[0]
-                label = line[1]
+            serialized = seq_example.SerializeToString()
 
-                sent2id.append(char_dict[char] if char in char_dict.keys() else char_dict["[UNK]"])
+            writer.write(serialized)
+            m_samples += 1
 
-                label2id.append(label_dict[label])
+        writer.close()
 
-    writer.close()
-
-    print("样本数：", m_samples)
+        print("样本数：", m_samples)
 
 
 if __name__ == "__main__":
-    # resume("data/OriginalFiles/demo.train.char",
-    #        "data/TFRecordFiles/demo_train.tfrecord",  # 1148
-    #        )
-    # resume("data/OriginalFiles/demo.dev.char",
-    #        "data/TFRecordFiles/demo_dev.tfrecord",  # 113
-    #        )
-    resume("data/OriginalFiles/demo.test.char",
-           "data/TFRecordFiles/demo_test.tfrecord",  # 316
-           )
+    mrc("data/OriginalFiles/msra_ner/train/part.0",
+        "data/TFRecordFiles/mrc_train.tfrecord",  # 20864
+        )
+    mrc("data/OriginalFiles/msra_ner/dev/part.0",
+        "data/TFRecordFiles/mrc_dev.tfrecord",  # 2318
+        )
+    mrc("data/OriginalFiles/msra_ner/test/part.0",
+        "data/TFRecordFiles/mrc_test.tfrecord",  # 4636
+        )
