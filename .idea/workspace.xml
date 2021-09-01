@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
-      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con_sp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MRC/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -188,7 +182,7 @@
       <workItem from="1630456819230" duration="1084000" />
       <workItem from="1630459594094" duration="1648000" />
       <workItem from="1630474412453" duration="12828000" />
-      <workItem from="1630507078538" duration="7352000" />
+      <workItem from="1630507078538" duration="7677000" />
     </task>
     <servers />
   </component>
