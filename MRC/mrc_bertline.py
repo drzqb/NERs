@@ -31,10 +31,10 @@ parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing ra
 parser.add_argument('--label_dim', type=int, default=7, help='number of ner labels')
 parser.add_argument('--check', type=str, default='model/mrc_bertlinear',
                     help='The path where model shall be saved')
-parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
-                                                               'train0: begin to train or retrain'
-                                                               'tran1:continue to train'
-                                                               'predict: predict')
+parser.add_argument('--mode', type=str, default='predict', help='The mode of train or predict as follows: '
+                                                                'train0: begin to train or retrain'
+                                                                'tran1:continue to train'
+                                                                'predict: predict')
 params = parser.parse_args()
 
 
@@ -285,7 +285,7 @@ class USER:
         model = self.build_model()
         model.load_weights(params.check + '/mrc.h5')
 
-        predict = model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
+        predict, _, _, _ = model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
 
         querycheck(predict)
 
@@ -306,7 +306,7 @@ if __name__ == '__main__':
         '国正学长的文章与诗词，早就读过一些，很是喜欢。',
         '阳关在敦煌西南相距七十公里处，当中的一座沙山，好似巨佛横卧。',
         '北京丰盛中学校长赵铮：我校是所普通完中，无择优生源，新生入校时约有四分之一属于差生。',
-        '在西山村，我们见到了张兰凤。',
+        '在南山村，我们见到了张兰凤和李伟夫妻二人。',
     ]
 
     m_samples = len(sentences)
