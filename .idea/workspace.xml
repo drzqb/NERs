@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
+      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/mrc_bertline_con_sp.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MRC/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MRC/mrc_bertline.py" beforeDir="false" afterPath="$PROJECT_DIR$/MRC/mrc_bertline.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,73 +50,7 @@
       <recent name="D:\pythonwork\NERs\medical" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.mrc_bertline">
-    <configuration name="bertcrf" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NERs" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/resume" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/resume/bertcrf.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="bertlinear" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NERs" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/resume" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/resume/bertlinear.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="data_process (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NERs" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MRC" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MRC/data_process.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.mrc_bertline_con_sp">
     <configuration name="mrc_bertline" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="NERs" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -128,6 +65,72 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MRC/mrc_bertline.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_bertline_con" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MRC" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MRC/mrc_bertline_con.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_bertline_con_dense" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MRC" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="D:\pythonwork\NERs\MRC\mrc_bertline_con_dense.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_bertline_con_sp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MRC" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MRC/mrc_bertline_con_sp.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -160,11 +163,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.mrc_bertline" />
-        <item itemvalue="Python.data_process (1)" />
+        <item itemvalue="Python.mrc_bertline_con_sp" />
+        <item itemvalue="Python.mrc_bertline_con" />
+        <item itemvalue="Python.mrc_bertline_con_dense" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.bertcrf" />
-        <item itemvalue="Python.bertlinear" />
+        <item itemvalue="Python.mrc_bertline" />
       </list>
     </recent_temporary>
   </component>
@@ -185,6 +188,7 @@
       <workItem from="1630456819230" duration="1084000" />
       <workItem from="1630459594094" duration="1648000" />
       <workItem from="1630474412453" duration="12828000" />
+      <workItem from="1630507078538" duration="7352000" />
     </task>
     <servers />
   </component>
@@ -199,22 +203,22 @@
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
     <state x="1157" y="311" key="FileChooserDialogImpl/0.0.2752.1112@0.0.2752.1112" timestamp="1629098911085" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.bottom" timestamp="1630490621410">
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom" timestamp="1630514453517">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1630490621410" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.center" timestamp="1630490621410">
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1630514453517" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.center" timestamp="1630514453517">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1630490621410" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.left" timestamp="1630490621410">
+    <state width="2753" height="1056" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1630514453517" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.left" timestamp="1630514453517">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1630490621410" />
-    <state width="2753" height="1056" key="GridCell.Tab.0.right" timestamp="1630490621410">
+    <state width="2753" height="1056" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1630514453517" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right" timestamp="1630514453517">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="2753" height="1056" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1630490621410" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1630514453517" />
     <state x="878" y="200" key="SettingsEditor" timestamp="1630457904497">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
@@ -229,13 +233,16 @@
     <SUITE FILE_PATH="coverage/NERs$mrc_bertline.coverage" NAME="mrc_bertline Coverage Results" MODIFIED="1630490572104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$bertlinearmrc.coverage" NAME="bertlinearmrc Coverage Results" MODIFIED="1630429598493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$bertgrucrf.coverage" NAME="bertgrucrf Coverage Results" MODIFIED="1629604524738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resume" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con.coverage" NAME="mrc_bertline_con Coverage Results" MODIFIED="1630512278247" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con1.coverage" NAME="mrc_bertline_con1 Coverage Results" MODIFIED="1630511256726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1630390334827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$robertcrf__1_.coverage" NAME="robertcrf (1) Coverage Results" MODIFIED="1629042719507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$visualize.coverage" NAME="visualize Coverage Results" MODIFIED="1629099478643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con_sp.coverage" NAME="mrc_bertline_con_sp Coverage Results" MODIFIED="1630514453512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$wobertcrf.coverage" NAME="wobertcrf Coverage Results" MODIFIED="1629042534985" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$robertgrucrf.coverage" NAME="robertgrucrf Coverage Results" MODIFIED="1629094043164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1630402603262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
-    <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1630482784337" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1630509631099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$bertlinear.coverage" NAME="bertlinear Coverage Results" MODIFIED="1629102368897" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resume" />
     <SUITE FILE_PATH="coverage/NERs$data_process__1_.coverage" NAME="data_process (1) Coverage Results" MODIFIED="1630486115715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
   </component>
