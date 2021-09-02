@@ -4,4 +4,4 @@
     
     resume: 简历
     
-    MRC: MRC NER
+    MRC: MRC NER，基于阅读理解任务的命名实体识别
