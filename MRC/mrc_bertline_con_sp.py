@@ -292,6 +292,31 @@ class USER:
 
         querycheck(predict)
 
+    def test(self):
+        model = self.build_model()
+        model.load_weights(params.check + '/mrc.h5')
+
+        test_data = batched_data(['data/TFRecordFiles/mrc_test.tfrecord'],
+                                 single_example_parser,
+                                 params.batch_size,
+                                 padded_shapes={"sen": [-1], "lab": [-1]},
+                                 buffer_size=100 * params.batch_size)
+
+        tp, tn, fp = 0.0, 0.0, 0.0
+
+        for data in test_data:
+            _, tp_, tn_, fp_ = model.predict(data)
+
+            tp += tp_
+            tn += tn_
+            fp += fp_
+
+            precision = tp / (tp + tn)
+            recall = tp / (tp + fp)
+            f1 = 2.0 * precision * recall / (precision + recall)
+
+            print('\r- precision: %.4f - recall: %.4f - f1: %.4f' % (precision, recall, f1), end="")
+
 
 if __name__ == '__main__':
     ner_dict = {'O': 0,
@@ -335,5 +360,7 @@ if __name__ == '__main__':
 
     if params.mode.startswith('train'):
         user.train()
-    else:
+    elif params.mode == "predict":
         user.predict()
+    elif params.mode == "test":
+        user.test()
