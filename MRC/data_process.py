@@ -58,7 +58,7 @@ def mrc(filepath, tfrecordfilepath):
         print("样本数：", m_samples)
 
 
-def rewrite(sourcefilepath, destfilepath):
+def rewritehorizontal(sourcefilepath, destfilepath):
     fw = open(destfilepath, "w", encoding="utf-8")
 
     with open(sourcefilepath, "r", encoding="utf-8") as fr:
@@ -69,6 +69,24 @@ def rewrite(sourcefilepath, destfilepath):
             label = line[1].split("\x02")
 
             fw.write("".join(char) + "\t" + " ".join(label) + "\n")
+
+    fw.close()
+
+
+def rewritevertical(sourcefilepath, destfilepath):
+    fw = open(destfilepath, "w", encoding="utf-8")
+
+    with open(sourcefilepath, "r", encoding="utf-8") as fr:
+        for line in tqdm(fr):
+            line = line.rstrip().split("\t")
+
+            char = line[0].split("\x02")
+            label = line[1].split("\x02")
+
+            for k in range(len(char)):
+                fw.write(char[k] + "\t" + label[k] + "\n")
+
+            fw.write("\n")
 
     fw.close()
 
@@ -84,9 +102,16 @@ if __name__ == "__main__":
     #     "data/TFRecordFiles/mrc_test.tfrecord",  # 4636
     #     )
 
-    # rewrite("data/OriginalFiles/msra_ner/train/part.0",
-    #         "data/OriginalFiles/msra_ner/train/part.txt", )
-    rewrite("data/OriginalFiles/msra_ner/dev/part.0",
-            "data/OriginalFiles/msra_ner/dev/part.txt", )
-    rewrite("data/OriginalFiles/msra_ner/test/part.0",
-            "data/OriginalFiles/msra_ner/test/part.txt", )
+    rewritehorizontal("data/OriginalFiles/msra_ner/train/part.0",
+            "data/OriginalFiles/msra_ner/train/parth.txt", )
+    rewritehorizontal("data/OriginalFiles/msra_ner/dev/part.0",
+            "data/OriginalFiles/msra_ner/dev/parth.txt", )
+    rewritehorizontal("data/OriginalFiles/msra_ner/test/part.0",
+            "data/OriginalFiles/msra_ner/test/parth.txt", )
+
+    # rewritevertical("data/OriginalFiles/msra_ner/train/part.0",
+    #                 "data/OriginalFiles/msra_ner/train/partv.txt", )
+    # rewritevertical("data/OriginalFiles/msra_ner/dev/part.0",
+    #                 "data/OriginalFiles/msra_ner/dev/partv.txt", )
+    # rewritevertical("data/OriginalFiles/msra_ner/test/part.0",
+    #                 "data/OriginalFiles/msra_ner/test/partv.txt", )
