@@ -190,9 +190,73 @@ def bieso2span():
     with open("data/OriginalFiles/train_span.txt", "w", encoding="utf-8") as f:
         json.dump(all_datas, f, ensure_ascii=False, indent=2)
 
-def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
 
-    pass
+def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
+    char_dict = load_vocab("data/OriginalFiles/vocab.txt")
+    with open(filepath, "r", encoding="utf-8") as f:
+        all_datas = json.load(f)
+
+    writer_train = tf.io.TFRecordWriter(train_tfrecordfilepath)
+    writer_dev = tf.io.TFRecordWriter(dev_tfrecordfilepath)
+
+    m_samples_train = 0
+    m_samples_dev = 0
+
+    for data in tqdm(all_datas):
+        text = data["context"]
+        seqlen = len(text)
+
+        sent2id = [101]
+        sent2id += [char_dict.get(char, char_dict["[UNK]"]) for char in text]
+        sent2id += [102]
+
+        spanMatrix = {
+            "TREATMENT": np.zeros([seqlen, seqlen], np.int),
+            "BODY": np.zeros([seqlen, seqlen], np.int),
+            "SIGNS": np.zeros([seqlen, seqlen], np.int),
+            "CHECK": np.zeros([seqlen, seqlen], np.int),
+            "DISEASE": np.zeros([seqlen, seqlen], np.int),
+        }
+
+        for se, label in data["span_posLabel"].items():
+            startid, endid = se.split(";")
+            spanMatrix[label][int(startid), int(endid)] = 1
+
+        sen_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in sent2id]
+        TREATMENT_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
+                             spanMatrix["TREATMENT"].flatten()]
+        BODY_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
+                        spanMatrix["BODY"].flatten()]
+        SIGNS_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
+                         spanMatrix["SIGNS"].flatten()]
+        CHECK_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
+                         spanMatrix["CHECK"].flatten()]
+        DISEASE_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
+                           spanMatrix["DISEASE"].flatten()]
+
+        seq_example = tf.train.SequenceExample(
+            feature_lists=tf.train.FeatureLists(feature_list={
+                'sen': tf.train.FeatureList(feature=sen_feature),
+                'treatment': tf.train.FeatureList(feature=TREATMENT_feature),
+                'body': tf.train.FeatureList(feature=BODY_feature),
+                'signs': tf.train.FeatureList(feature=SIGNS_feature),
+                'check': tf.train.FeatureList(feature=CHECK_feature),
+                'disease': tf.train.FeatureList(feature=DISEASE_feature),
+            })
+        )
+
+        serialized = seq_example.SerializeToString()
+
+        if np.random.random() > 0.1:
+            writer_train.write(serialized)
+            m_samples_train += 1
+        else:
+            writer_dev.write(serialized)
+            m_samples_dev += 1
+
+    print("训练集样本数：", m_samples_train)
+    print("验证集样本数：", m_samples_dev)
+
 
 if __name__ == "__main__":
     # medical("data/OriginalFiles/train.txt",
@@ -202,4 +266,8 @@ if __name__ == "__main__":
 
     # bi2bieso()
 
-    bieso2span()
+    # bieso2span()
+    medicalspan("data/OriginalFiles/train_span.txt",
+                "data/TFRecordFiles/train_span.tfrecord",  # 7036
+                "data/TFRecordFiles/dev_span.tfrecord",  # 781
+                )
