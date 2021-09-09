@@ -1,5 +1,5 @@
 '''
-    wobert + crf for medical ner with tf2.0
+    robert + crf for medical ner with tf2.0
 '''
 
 import tensorflow as tf

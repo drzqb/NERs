@@ -190,6 +190,9 @@ def bieso2span():
     with open("data/OriginalFiles/train_span.txt", "w", encoding="utf-8") as f:
         json.dump(all_datas, f, ensure_ascii=False, indent=2)
 
+def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
+
+    pass
 
 if __name__ == "__main__":
     # medical("data/OriginalFiles/train.txt",

@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
-      <change afterPath="$PROJECT_DIR$/medical/data/OriginalFiles/train_bieso.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/medical/data/OriginalFiles/train_span.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/medical/data_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/data_process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/robertcrf.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/robertcrf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/robertgrucrf.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/robertgrucrf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/robertlinear.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/robertlinear.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,7 +193,7 @@
       <workItem from="1630732578074" duration="2022000" />
       <workItem from="1630997531168" duration="1078000" />
       <workItem from="1631081643169" duration="1335000" />
-      <workItem from="1631149744015" duration="11649000" />
+      <workItem from="1631149744015" duration="12184000" />
     </task>
     <servers />
   </component>
