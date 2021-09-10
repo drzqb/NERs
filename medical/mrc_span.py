@@ -242,7 +242,7 @@ class CheckCallback(tf.keras.callbacks.Callback):
         recall = tp / (tp + fp)
         f1 = 2.0 * precision * recall / (precision + recall)
 
-        sys.stdout.write('\n - precision: %.4f - recall: %.4f - f1: %.4f' % (precision, recall, f1))
+        sys.stdout.write('\nprecision: %.4f recall: %.4f f1: %.4f\n' % (precision, recall, f1))
         sys.stdout.flush()
 
         # predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
