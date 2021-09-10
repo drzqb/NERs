@@ -12,6 +12,7 @@ from transformers.optimization_tf import AdamWeightDecay
 from transformers import TFBertModel, BertTokenizer
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.initializers import TruncatedNormal
+from tensorflow.keras.losses import BinaryCrossentropy as bce
 from OtherUtils import load_vocab
 
 import numpy as np
@@ -22,11 +23,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # 使用GPU
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 屏蔽警告信息
 
 parser = argparse.ArgumentParser(description='manual to this script')
-parser.add_argument('--batch_size', type=int, default=4, help='Batch size during training')
+parser.add_argument('--batch_size', type=int, default=2, help='Batch size during training')
 parser.add_argument('--epochs', type=int, default=10, help='Epochs during training')
 parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing rate')
-parser.add_argument('--label_dim', type=int, default=7, help='number of ner labels')
-parser.add_argument('--check', type=str, default='model/mrc_bertlinear_con_dense',
+parser.add_argument('--eps', type=float, default=1.0e-6, help='epsilon')
+parser.add_argument('--label_num', type=int, default=5, help='number of ner labels')
+parser.add_argument('--check', type=str, default='model/mrc_span',
                     help='The path where model shall be saved')
 parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
                                                                'train0: begin to train or retrain'
@@ -38,11 +40,10 @@ params = parser.parse_args()
 def single_example_parser(serialized_example):
     sequence_features = {
         'sen': tf.io.FixedLenSequenceFeature([], tf.int64),
-        'treatment': tf.io.FixedLenSequenceFeature([], tf.int64),
-        'body': tf.io.FixedLenSequenceFeature([], tf.int64),
-        'signs': tf.io.FixedLenSequenceFeature([], tf.int64),
-        'check': tf.io.FixedLenSequenceFeature([], tf.int64),
-        'disease': tf.io.FixedLenSequenceFeature([], tf.int64),
+        'start': tf.io.FixedLenSequenceFeature([], tf.int64),
+        'end': tf.io.FixedLenSequenceFeature([], tf.int64),
+        'span': tf.io.FixedLenSequenceFeature([], tf.int64),
+        'val': tf.io.FixedLenSequenceFeature([], tf.int64),
     }
 
     _, sequence_parsed = tf.io.parse_single_sequence_example(
@@ -53,18 +54,19 @@ def single_example_parser(serialized_example):
     sen = sequence_parsed['sen']
     seqlen = tf.shape(sen)[0] - 2
 
-    treatment = tf.reshape(sequence_parsed['treatment'], [seqlen, seqlen])
-    body = tf.reshape(sequence_parsed['body'], [seqlen, seqlen])
-    signs = tf.reshape(sequence_parsed['signs'], [seqlen, seqlen])
-    check = tf.reshape(sequence_parsed['check'], [seqlen, seqlen])
-    disease = tf.reshape(sequence_parsed['disease'], [seqlen, seqlen])
+    start = tf.reshape(sequence_parsed['start'], [params.label_num, seqlen])
+
+    end = tf.reshape(sequence_parsed['end'], [params.label_num, seqlen])
+
+    span = tf.reshape(sequence_parsed['span'], [params.label_num, seqlen, seqlen])
+
+    val = tf.reshape(sequence_parsed['val'], [params.label_num, seqlen, seqlen])
 
     return {"sen": sen,
-            "treatment": treatment,
-            "body": body,
-            "signs": signs,
-            "check": check,
-            "disease": disease,
+            "start": start,
+            "end": end,
+            "span": span,
+            "val": val,
             }
 
 
@@ -114,79 +116,99 @@ class MRC(Layer):
     def __init__(self, **kwargs):
         super(MRC, self).__init__(**kwargs)
 
-        self.dense_ner_treatment = Dense(1,
-                                         kernel_initializer=TruncatedNormal(stddev=0.02),
-                                         dtype=tf.float32,
-                                         activation="sigmoid",
-                                         name='nertreatment')
-        self.dense_ner_body = Dense(1,
+        self.dense_startend = Dense(2 * params.label_num,
                                     kernel_initializer=TruncatedNormal(stddev=0.02),
                                     dtype=tf.float32,
                                     activation="sigmoid",
-                                    name='nerbody')
-        self.dense_ner_signs = Dense(1,
-                                     kernel_initializer=TruncatedNormal(stddev=0.02),
-                                     dtype=tf.float32,
-                                     activation="sigmoid",
-                                     name='nersigns')
-        self.dense_ner_check = Dense(1,
-                                     kernel_initializer=TruncatedNormal(stddev=0.02),
-                                     dtype=tf.float32,
-                                     activation="sigmoid",
-                                     name='nercheck')
-        self.dense_ner_disease = Dense(1,
-                                       kernel_initializer=TruncatedNormal(stddev=0.02),
-                                       dtype=tf.float32,
-                                       activation="sigmoid",
-                                       name='nerdisease')
+                                    name='startend')
+
+        self.dense_span = Dense(params.label_num,
+                                kernel_initializer=TruncatedNormal(stddev=0.02),
+                                dtype=tf.float32,
+                                activation="sigmoid",
+                                name='span')
 
     def call(self, inputs, **kwargs):
-        x, label, seqlen = inputs
+        # x: B*N*768,start,end: B*5*N,span,val: B*5*N*N seqlen: B
+        x, start, end, span, val, seqlen = inputs
 
-        output_loc = self.dense_ner_loc(x)
-        output_per = self.dense_ner_per(x)
-        output_org = self.dense_ner_org(x)
+        # B*N*10
+        startend_output = self.dense_startend(x)
 
-        output_r = tf.concat([output_loc, output_per, output_org], axis=0)
+        # B*10*N*1
+        startend_output = tf.expand_dims(tf.transpose(startend_output, [0, 2, 1]), axis=-1)
 
-        label1 = tf.where(tf.logical_or(tf.equal(label, 1), tf.equal(label, 2)), label, tf.zeros_like(label))
-        label2 = tf.where(tf.logical_or(tf.equal(label, 3), tf.equal(label, 4)), label, tf.zeros_like(label))
-        label3 = tf.where(tf.logical_or(tf.equal(label, 5), tf.equal(label, 6)), label, tf.zeros_like(label))
+        # B*10*N
+        startend = tf.concat([start, end], axis=1)
 
-        label_r = tf.concat([label1, label2, label3], axis=0)
-        seqlen_r = tf.tile(seqlen, [3])
-        sequence_mask_r = tf.sequence_mask(seqlen_r, tf.reduce_max(seqlen_r))
-        seqlen_sum_r = tf.cast(tf.reduce_sum(seqlen_r), tf.float32)
+        # B*10*N*1
+        startend = tf.expand_dims(startend, axis=-1)
 
-        loss = tf.keras.losses.sparse_categorical_crossentropy(label_r, output_r, from_logits=True)
-        lossf = tf.zeros_like(loss)
-        loss = tf.where(sequence_mask_r, loss, lossf)
+        # B*10*N
+        startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
 
-        self.add_loss(tf.reduce_sum(loss) / seqlen_sum_r)
+        # B*N
+        sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
 
-        predict_r = tf.argmax(output_r, axis=-1, output_type=tf.int32)
+        # B*10*N
+        sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.float32)
 
-        predict_r = tf.stack(tf.split(predict_r, 3), axis=2)
+        # B*10*N
+        startend_loss *= sequencemask
 
-        predict_s = tf.reduce_sum(tf.cast(tf.greater(predict_r, 0), tf.int32), axis=-1)
-        predict = tf.reduce_sum(predict_r, axis=-1)
-        predict = tf.where(tf.greater(predict_s, 1), tf.zeros_like(predict), predict)
+        startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
 
-        sequence_mask = tf.cast(tf.sequence_mask(seqlen, tf.reduce_max(seqlen)), tf.float32)
-        seqlen_sum = tf.cast(tf.reduce_sum(seqlen), tf.float32)
+        self.add_loss(startend_loss)
 
-        accuracy = tf.reduce_sum(tf.cast(tf.equal(predict, label), tf.float32) * sequence_mask) / seqlen_sum
+        N = tf.shape(x)[1]
+
+        # B*N*N*768
+        startx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1])
+        endx = tf.tile(tf.expand_dims(x, 1), [1, N, 1, 1])
+
+        # B*N*N*(768*2)
+        spanx = tf.concat([startx, endx], axis=-1)
+
+        # B*N*N*5
+        span_output = self.dense_span(spanx)
+
+        # B*5*N*N
+        span_output = tf.transpose(span_output, [0, 3, 1, 2])
+
+        # B*5*N*N
+        span_predict = tf.cast(tf.greater(span_output, 0.5), tf.int32)
+
+        # B*5*N*N
+        accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
+
+        # B*5*N*N
+        val = tf.cast(val, tf.float32)
+
+        accuracy *= val
+
+        valsum = tf.reduce_sum(val) + params.eps
+
+        accuracy = tf.reduce_sum(accuracy) / valsum
 
         self.add_metric(accuracy, name="acc")
 
-        tp = tf.reduce_sum(tf.where(tf.logical_and(tf.greater(label, 0), tf.equal(predict, label)),
-                                    tf.ones_like(predict, tf.float32), tf.zeros_like(predict, tf.float32)))
-        tn = tf.reduce_sum(tf.where(tf.logical_and(tf.greater(label, 0), tf.not_equal(predict, label)),
-                                    tf.ones_like(predict, tf.float32), tf.zeros_like(predict, tf.float32)))
-        fp = tf.reduce_sum(tf.where(tf.logical_and(tf.equal(label, 0), tf.greater(predict, 0)),
-                                    tf.ones_like(predict, tf.float32),
-                                    tf.zeros_like(predict, tf.float32)) * sequence_mask)
-        return predict, tp, tn, fp
+        # B*5*N*N*1
+        span_outputlogits = tf.expand_dims(span_output, axis=-1)
+
+        # B*5*N*N*1
+        span = tf.expand_dims(span, axis=-1)
+
+        # B*5*N*N
+        span_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(span, span_outputlogits)
+
+        # B*5*N*N
+        span_loss *= val
+
+        span_loss = tf.reduce_sum(span_loss) / valsum
+
+        self.add_loss(span_loss)
+
+        return span_output
 
 
 class CheckCallback(tf.keras.callbacks.Callback):
@@ -234,7 +256,14 @@ class USER:
 
     def build_model(self):
         sen = Input(shape=[None], name='sen', dtype=tf.int32)
-        lab = Input(shape=[None], name='lab', dtype=tf.int32)
+
+        start = Input(shape=[params.label_num, None], name='start', dtype=tf.int32)
+
+        end = Input(shape=[params.label_num, None], name='end', dtype=tf.int32)
+
+        span = Input(shape=[params.label_num, None, None], name='span', dtype=tf.int32)
+
+        val = Input(shape=[params.label_num, None, None], name='val', dtype=tf.int32)
 
         seqlen = Mask(name="mask")(sen)
 
@@ -242,9 +271,9 @@ class USER:
 
         sequence_split = SplitSequence(name="splitsequence")(sequence_output)
 
-        predict = MRC(label_dim=params.label_dim, name="mrc")(inputs=(sequence_split, lab, seqlen))
+        predict = MRC(name="mrc")(inputs=(sequence_split, start, end, span, val, seqlen))
 
-        model = Model(inputs=[sen, lab], outputs=predict)
+        model = Model(inputs=[sen, start, end, span, val], outputs=predict)
 
         model.summary()
 
@@ -267,11 +296,10 @@ class USER:
                                   single_example_parser,
                                   params.batch_size,
                                   padded_shapes={"sen": [-1],
-                                                 "treatment": [-1, -1],
-                                                 "body": [-1, -1],
-                                                 "signs": [-1, -1],
-                                                 "check": [-1, -1],
-                                                 "disease": [-1, -1],
+                                                 "start": [params.label_num, -1],
+                                                 "end": [params.label_num, -1],
+                                                 "span": [params.label_num, -1, -1],
+                                                 "val": [params.label_num, -1, -1],
                                                  },
                                   buffer_size=100 * params.batch_size)
 
@@ -279,26 +307,25 @@ class USER:
                                 single_example_parser,
                                 params.batch_size,
                                 padded_shapes={"sen": [-1],
-                                               "treatment": [-1, -1],
-                                               "body": [-1, -1],
-                                               "signs": [-1, -1],
-                                               "check": [-1, -1],
-                                               "disease": [-1, -1],
+                                               "start": [params.label_num, -1],
+                                               "end": [params.label_num, -1],
+                                               "span": [params.label_num, -1, -1],
+                                               "val": [params.label_num, -1, -1],
                                                },
                                 buffer_size=100 * params.batch_size)
 
-        callbacks = [
-            EarlyStopping(monitor='val_acc', patience=3),
-            ModelCheckpoint(filepath=params.check + '/mrc.h5',
-                            monitor='val_acc',
-                            save_best_only=True),
-            CheckCallback(dev_data)
-        ]
+        # callbacks = [
+        #     EarlyStopping(monitor='val_acc', patience=3),
+        #     ModelCheckpoint(filepath=params.check + '/mrc.h5',
+        #                     monitor='val_acc',
+        #                     save_best_only=True),
+        #     CheckCallback(dev_data)
+        # ]
 
         history = model.fit(batch_data,
                             epochs=params.epochs,
                             validation_data=dev_data,
-                            callbacks=callbacks
+                            # callbacks=callbacks
                             )
 
         with open(params.check + "/history.txt", "w", encoding="utf-8") as fw:
@@ -314,10 +341,19 @@ class USER:
 
 
 if __name__ == '__main__':
-    ner_dict = {'O': 0,
-                'B-LOC': 1, 'I-LOC': 2,
-                'B-PER': 3, 'I-PER': 4,
-                'B-ORG': 5, 'I-ORG': 6, }
+    ner_dict = {
+        'O': 0,
+        'TREATMENT-I': 1,
+        'TREATMENT-B': 2,
+        'BODY-B': 3,
+        'BODY-I': 4,
+        'SIGNS-I': 5,
+        'SIGNS-B': 6,
+        'CHECK-B': 7,
+        'CHECK-I': 8,
+        'DISEASE-I': 9,
+        'DISEASE-B': 10
+    }
     ner_inverse_dict = {v: k for k, v in ner_dict.items()}
     char_dict = load_vocab("data/OriginalFiles/vocab.txt")
 
@@ -325,6 +361,7 @@ if __name__ == '__main__':
         os.makedirs(params.check)
 
     user = USER()
+
     sentences = [
         '国正学长的文章与诗词，早就读过一些，很是喜欢。',
         '阳关在敦煌西南相距七十公里处，当中的一座沙山，好似巨佛横卧。',

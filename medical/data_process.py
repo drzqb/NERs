@@ -210,6 +210,20 @@ def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
         sent2id += [char_dict.get(char, char_dict["[UNK]"]) for char in text]
         sent2id += [102]
 
+        startMatrix = {
+            "TREATMENT": np.zeros([seqlen], np.int),
+            "BODY": np.zeros([seqlen], np.int),
+            "SIGNS": np.zeros([seqlen], np.int),
+            "CHECK": np.zeros([seqlen], np.int),
+            "DISEASE": np.zeros([seqlen], np.int),
+        }
+        endMatrix = {
+            "TREATMENT": np.zeros([seqlen], np.int),
+            "BODY": np.zeros([seqlen], np.int),
+            "SIGNS": np.zeros([seqlen], np.int),
+            "CHECK": np.zeros([seqlen], np.int),
+            "DISEASE": np.zeros([seqlen], np.int),
+        }
         spanMatrix = {
             "TREATMENT": np.zeros([seqlen, seqlen], np.int),
             "BODY": np.zeros([seqlen, seqlen], np.int),
@@ -217,31 +231,71 @@ def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
             "CHECK": np.zeros([seqlen, seqlen], np.int),
             "DISEASE": np.zeros([seqlen, seqlen], np.int),
         }
+        valMatrix = {
+            "TREATMENT": np.zeros([seqlen, seqlen], np.int),
+            "BODY": np.zeros([seqlen, seqlen], np.int),
+            "SIGNS": np.zeros([seqlen, seqlen], np.int),
+            "CHECK": np.zeros([seqlen, seqlen], np.int),
+            "DISEASE": np.zeros([seqlen, seqlen], np.int),
+        }
+
+        startids = {
+            "TREATMENT": [],
+            "BODY": [],
+            "SIGNS": [],
+            "CHECK": [],
+            "DISEASE": [],
+        }
+
+        endids = {
+            "TREATMENT": [],
+            "BODY": [],
+            "SIGNS": [],
+            "CHECK": [],
+            "DISEASE": [],
+        }
 
         for se, label in data["span_posLabel"].items():
             startid, endid = se.split(";")
             spanMatrix[label][int(startid), int(endid)] = 1
+            startMatrix[label][int(startid)] = 1
+            endMatrix[label][int(endid)] = 1
+            startids[label].append(int(startid))
+            endids[label].append(int(endid))
 
-        sen_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in sent2id]
-        TREATMENT_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
-                             spanMatrix["TREATMENT"].flatten()]
-        BODY_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
-                        spanMatrix["BODY"].flatten()]
-        SIGNS_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
-                         spanMatrix["SIGNS"].flatten()]
-        CHECK_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
-                         spanMatrix["CHECK"].flatten()]
-        DISEASE_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[sen_])) for sen_ in
-                           spanMatrix["DISEASE"].flatten()]
+        for k, vs in startids.items():
+            for ids in vs:
+                for ide in endids[k]:
+                    if ide >= ids:
+                        valMatrix[k][ids, ide] = 1
+
+        sen_feature = [tf.train.Feature(int64_list=tf.train.Int64List(value=[t])) for t in sent2id]
+
+        start_feature = []
+        for k in startMatrix.keys():
+            start_feature += [tf.train.Feature(int64_list=tf.train.Int64List(value=[t])) for t in startMatrix[k]]
+
+        end_feature = []
+        for k in endMatrix.keys():
+            end_feature += [tf.train.Feature(int64_list=tf.train.Int64List(value=[t])) for t in endMatrix[k]]
+
+        span_feature = []
+        for k in spanMatrix.keys():
+            span_feature += [tf.train.Feature(int64_list=tf.train.Int64List(value=[t])) for t in
+                             spanMatrix[k].flatten()]
+
+        val_feature = []
+        for k in valMatrix.keys():
+            val_feature += [tf.train.Feature(int64_list=tf.train.Int64List(value=[t])) for t in
+                            valMatrix[k].flatten()]
 
         seq_example = tf.train.SequenceExample(
             feature_lists=tf.train.FeatureLists(feature_list={
                 'sen': tf.train.FeatureList(feature=sen_feature),
-                'treatment': tf.train.FeatureList(feature=TREATMENT_feature),
-                'body': tf.train.FeatureList(feature=BODY_feature),
-                'signs': tf.train.FeatureList(feature=SIGNS_feature),
-                'check': tf.train.FeatureList(feature=CHECK_feature),
-                'disease': tf.train.FeatureList(feature=DISEASE_feature),
+                'start': tf.train.FeatureList(feature=start_feature),
+                'end': tf.train.FeatureList(feature=end_feature),
+                'span': tf.train.FeatureList(feature=span_feature),
+                'val': tf.train.FeatureList(feature=val_feature),
             })
         )
 
