@@ -81,6 +81,22 @@ def batched_data(tfrecord_filename, single_example_parser, batch_size, padded_sh
     return dataset
 
 
+def focal_loss(y_true, y_pred, gamma=2.0):
+    """
+    Focal Loss 针对样本不均衡
+    :param y_true: 样本标签
+    :param y_pred: 预测值（sigmoid）
+    :return: focal loss
+    """
+
+    alpha = 0.5
+    loss = tf.where(tf.equal(y_true, 1),
+                    -alpha * (1.0 - y_pred) ** gamma * tf.math.log(y_pred),
+                    -(1.0 - alpha) * y_pred ** gamma * tf.math.log(1.0 - y_pred))
+
+    return tf.squeeze(loss, axis=-1)
+
+
 class Mask(Layer):
     def __init__(self, **kwargs):
         super(Mask, self).__init__(**kwargs)
@@ -145,7 +161,8 @@ class MRC(Layer):
         startend = tf.expand_dims(startend, axis=-1)
 
         # B*10*N
-        startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
+        # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
+        startend_loss = focal_loss(startend, startend_output)
 
         # B*N
         sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
@@ -188,7 +205,9 @@ class MRC(Layer):
 
         valsum = tf.reduce_sum(valf) + params.eps
 
-        accuracy = tf.reduce_sum(accuracy) / valsum
+        accuracysum = tf.reduce_sum(accuracy)
+
+        accuracy = accuracysum / valsum
 
         self.add_metric(accuracy, name="acc")
 
@@ -200,7 +219,7 @@ class MRC(Layer):
 
         # 不是有效实体，预测是实体
         fp = tf.reduce_sum(tf.cast(
-            tf.logical_and(tf.logical_and(tf.equal(span, 0), tf.equal(val, 1)), tf.not_equal(span_predict, 1)),
+            tf.logical_and(tf.logical_and(tf.equal(span, 0), tf.equal(val, 1)), tf.equal(span_predict, 1)),
             tf.float32))
 
         # B*5*N*N*1
@@ -210,7 +229,7 @@ class MRC(Layer):
         span = tf.expand_dims(span, axis=-1)
 
         # B*5*N*N
-        span_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(span, span_outputlogits)
+        span_loss = focal_loss(span, span_outputlogits)
 
         # B*5*N*N
         span_loss *= valf
@@ -219,7 +238,7 @@ class MRC(Layer):
 
         self.add_loss(span_loss)
 
-        return span_output, tp, tn, fp
+        return span_predict, tp, tn, fp
 
 
 class CheckCallback(tf.keras.callbacks.Callback):
@@ -238,11 +257,11 @@ class CheckCallback(tf.keras.callbacks.Callback):
             tn += tn_
             fp += fp_
 
-        precision = tp / (tp + tn)
-        recall = tp / (tp + fp)
-        f1 = 2.0 * precision * recall / (precision + recall)
+        precision = tp / (tp + fp + params.eps)
+        recall = tp / (tp + tn + params.eps)
+        f1 = 2.0 * precision * recall / (precision + recall + params.eps)
 
-        sys.stdout.write('\nprecision: %.4f recall: %.4f f1: %.4f\n' % (precision, recall, f1))
+        sys.stdout.write('\nprecision: %.4f recall: %.4f f1: %.4f\n\n' % (precision, recall, f1))
         sys.stdout.flush()
 
         # predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
@@ -350,6 +369,106 @@ class USER:
 
         querycheck(predict)
 
+    def test(self):
+        model = self.build_model()
+        model.load_weights(params.check + '/mrc.h5')
+
+        dev_data = batched_data(['data/TFRecordFiles/dev_span.tfrecord'],
+                                single_example_parser,
+                                1,
+                                padded_shapes={"sen": [-1],
+                                               "start": [params.label_num, -1],
+                                               "end": [params.label_num, -1],
+                                               "span": [params.label_num, -1, -1],
+                                               "val": [params.label_num, -1, -1],
+                                               },
+                                buffer_size=100 * params.batch_size)
+
+        tp, tn, fp = 0.0, 0.0, 0.0
+
+        fw = open(params.check + "/log.txt", "w", encoding="utf-8")
+
+        for data in dev_data:
+            sen = data["sen"][0][1:-1]
+            start = data["start"][0]
+            end = data["end"][0]
+            span = data["span"][0]
+            val = data["val"][0]
+
+            fw.write("句子\n")
+            fw.write("".join([char_inverse_dict[s] for s in sen.numpy()]) + "\n\n")
+
+            fw.write("start\n")
+            start = start.numpy()
+            for i in range(len(start)):
+                fw.write(str(i) + ": ")
+                for j in range(len(start[i])):
+                    if start[i, j] == 1:
+                        fw.write("%d\t" % j)
+
+                fw.write("\n")
+            fw.write("\n")
+
+            fw.write("end\n")
+            end = end.numpy()
+            for i in range(len(end)):
+                fw.write(str(i) + ": ")
+                for j in range(len(end[i])):
+                    if end[i, j] == 1:
+                        fw.write("%d\t" % j)
+
+                fw.write("\n")
+            fw.write("\n")
+
+            fw.write("span\n")
+            span = span.numpy()
+            val = val.numpy()
+
+            for i in range(len(span)):
+                fw.write(str(i) + ": ")
+                for j in range(len(span[i])):
+                    for k in range(len(span[i, j])):
+                        if val[i, j, k] == 1:
+                            fw.write("%d;%d;%d\t" % (j, k, span[i, j, k]))
+                fw.write("\n")
+            fw.write("\n")
+
+            fw.write("val\n")
+            for i in range(len(val)):
+                fw.write(str(i) + ": ")
+                for j in range(len(val[i])):
+                    for k in range(len(val[i, j])):
+                        if val[i, j, k] == 1:
+                            fw.write("%d;%d\t" % (j, k))
+                fw.write("\n")
+            fw.write("\n")
+
+            span_predict_, tp_, tn_, fp_ = model.predict(data)
+
+            fw.write("predict\n")
+            span_predict_ = span_predict_[0]
+            for i in range(len(span_predict_)):
+                fw.write(str(i) + ": ")
+                for j in range(len(span_predict_[i])):
+                    for k in range(len(span_predict_[i, j])):
+                        if val[i, j, k] == 1:
+                            fw.write("%d;%d;%d\t" % (j, k, span_predict_[i, j, k]))
+                fw.write("\n")
+            fw.write("\n")
+
+            fw.write("TP: %d TN: %d FP: %d\n\n" % (tp_, tn_, fp_))
+
+            tp += tp_
+            tn += tn_
+            fp += fp_
+
+        precision = tp / (tp + fp + params.eps)
+        recall = tp / (tp + tn + params.eps)
+        f1 = 2.0 * precision * recall / (precision + recall + params.eps)
+
+        sys.stdout.write('\nprecision: %.4f recall: %.4f f1: %.4f\n\n' % (precision, recall, f1))
+        sys.stdout.flush()
+
 
 if __name__ == '__main__':
     ner_dict = {
@@ -366,7 +485,9 @@ if __name__ == '__main__':
         'DISEASE-B': 10
     }
     ner_inverse_dict = {v: k for k, v in ner_dict.items()}
+
     char_dict = load_vocab("data/OriginalFiles/vocab.txt")
+    char_inverse_dict = {v: k for k, v in char_dict.items()}
 
     if not os.path.exists(params.check):
         os.makedirs(params.check)
@@ -403,5 +524,7 @@ if __name__ == '__main__':
 
     if params.mode.startswith('train'):
         user.train()
+    elif params.mode == "test":
+        user.test()
     else:
         user.predict()

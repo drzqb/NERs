@@ -197,8 +197,8 @@ class CheckCallback(tf.keras.callbacks.Callback):
             tn += tn_
             fp += fp_
 
-        precision = tp / (tp + tn)
-        recall = tp / (tp + fp)
+        precision = tp / (tp + fp)
+        recall = tp / (tp + tn)
         f1 = 2.0 * precision * recall / (precision + recall)
 
         sys.stdout.write('\n - precision: %.4f - recall: %.4f - f1: %.4f' % (precision, recall, f1))
@@ -311,8 +311,8 @@ class USER:
             tn += tn_
             fp += fp_
 
-            precision = tp / (tp + tn)
-            recall = tp / (tp + fp)
+            precision = tp / (tp + fp)
+            recall = tp / (tp + tn)
             f1 = 2.0 * precision * recall / (precision + recall)
 
             print('\r- precision: %.4f - recall: %.4f - f1: %.4f' % (precision, recall, f1), end="")
