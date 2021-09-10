@@ -182,15 +182,26 @@ class MRC(Layer):
         accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
 
         # B*5*N*N
-        val = tf.cast(val, tf.float32)
+        valf = tf.cast(val, tf.float32)
 
-        accuracy *= val
+        accuracy *= valf
 
-        valsum = tf.reduce_sum(val) + params.eps
+        valsum = tf.reduce_sum(valf) + params.eps
 
         accuracy = tf.reduce_sum(accuracy) / valsum
 
         self.add_metric(accuracy, name="acc")
+
+        # 是实体，预测是实体
+        tp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.equal(span_predict, 1)), tf.float32))
+
+        # 是实体，预测不是实体
+        tn = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.not_equal(span_predict, 1)), tf.float32))
+
+        # 不是有效实体，预测是实体
+        fp = tf.reduce_sum(tf.cast(
+            tf.logical_and(tf.logical_and(tf.equal(span, 0), tf.equal(val, 1)), tf.not_equal(span_predict, 1)),
+            tf.float32))
 
         # B*5*N*N*1
         span_outputlogits = tf.expand_dims(span_output, axis=-1)
@@ -202,13 +213,13 @@ class MRC(Layer):
         span_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(span, span_outputlogits)
 
         # B*5*N*N
-        span_loss *= val
+        span_loss *= valf
 
         span_loss = tf.reduce_sum(span_loss) / valsum
 
         self.add_loss(span_loss)
 
-        return span_output
+        return span_output, tp, tn, fp
 
 
 class CheckCallback(tf.keras.callbacks.Callback):
@@ -234,8 +245,8 @@ class CheckCallback(tf.keras.callbacks.Callback):
         sys.stdout.write('\n - precision: %.4f - recall: %.4f - f1: %.4f' % (precision, recall, f1))
         sys.stdout.flush()
 
-        predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
-        querycheck(predict)
+        # predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
+        # querycheck(predict)
 
 
 def querycheck(predict):
@@ -314,18 +325,18 @@ class USER:
                                                },
                                 buffer_size=100 * params.batch_size)
 
-        # callbacks = [
-        #     EarlyStopping(monitor='val_acc', patience=3),
-        #     ModelCheckpoint(filepath=params.check + '/mrc.h5',
-        #                     monitor='val_acc',
-        #                     save_best_only=True),
-        #     CheckCallback(dev_data)
-        # ]
+        callbacks = [
+            EarlyStopping(monitor='val_acc', patience=3),
+            ModelCheckpoint(filepath=params.check + '/mrc.h5',
+                            monitor='val_acc',
+                            save_best_only=True),
+            CheckCallback(dev_data)
+        ]
 
         history = model.fit(batch_data,
                             epochs=params.epochs,
                             validation_data=dev_data,
-                            # callbacks=callbacks
+                            callbacks=callbacks
                             )
 
         with open(params.check + "/history.txt", "w", encoding="utf-8") as fw:
