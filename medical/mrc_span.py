@@ -271,12 +271,22 @@ class CheckCallback(tf.keras.callbacks.Callback):
 def querycheck(predict):
     sys.stdout.write('\n')
     sys.stdout.flush()
+    labels = ["TREATMENT", "BODY", "SIGNS", "CHECK", "DISEASE"]
+
     for i, pre in enumerate(predict):
-        for j in range(leng[i]):
-            sys.stdout.write(sentences[i][j] + '\t' + ner_inverse_dict[pre[j]] + '\n')
+        sys.stdout.write(sentences[i] + '\n')
+
+        for j in range(len(predict[i])):
+            sys.stdout.write(labels[j] + ': ')
+
+            for k in range(leng[i]):
+                for l in range(leng[i]):
+                    if predict[i, j, k, l] == 1:
+                        sys.stdout.write("%d;%d\t" % (k, l))
+
+            sys.stdout.write('\n')
         sys.stdout.write('\n\n')
-        sys.stdout.flush()
-    sys.stdout.write('\n')
+
     sys.stdout.flush()
 
 
@@ -365,7 +375,14 @@ class USER:
         model = self.build_model()
         model.load_weights(params.check + '/mrc.h5')
 
-        predict, _, _, _ = model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
+        BN = tf.shape(sent)
+        B, N = BN[0], BN[1]
+
+        predict, _, _, _ = model.predict([sent,
+                                          tf.ones([B, params.label_num, N], tf.int32),
+                                          tf.ones([B, params.label_num, N], tf.int32),
+                                          tf.ones([B, params.label_num, N, N], tf.int32),
+                                          tf.ones([B, params.label_num, N, N], tf.int32)])
 
         querycheck(predict)
 
