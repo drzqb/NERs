@@ -2,6 +2,7 @@
     bert for ner with tf2.0
     bert通过transformers加载
     通过任务Dense来区分 TREATMENT、BODY、SIGNS、CHECK、DISEASE
+    扩大负样本
 '''
 
 import tensorflow as tf
@@ -31,11 +32,11 @@ parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing ra
 parser.add_argument('--eps', type=float, default=1.0e-6, help='epsilon')
 parser.add_argument('--label_num', type=int, default=5, help='number of ner labels')
 parser.add_argument('--per_save', type=int, default=3527, help='save model per num')
-parser.add_argument('--check', type=str, default='model/mrc_span', help='The path where model saved')
-parser.add_argument('--mode', type=str, default='predict', help='The mode of train or predict as follows: '
-                                                               'train0: begin to train or retrain'
-                                                               'tran1:continue to train'
-                                                               'predict: predict')
+parser.add_argument('--check', type=str, default='model/mrc_span_sp', help='The path where model saved')
+parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
+                                                                'train0: begin to train or retrain'
+                                                                'tran1:continue to train'
+                                                                'predict: predict')
 params = parser.parse_args()
 
 
@@ -175,16 +176,7 @@ class MRC(Layer):
         # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
         startend_loss = focal_loss(startend, startend_output)
 
-        # B*N
-        sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
-
-        # B*10*N
-        sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.float32)
-
-        # B*10*N
-        startend_loss *= sequencemask
-
-        startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
+        startend_loss = tf.reduce_mean(startend_loss)
 
         self.add_loss(startend_loss)
 
@@ -209,16 +201,7 @@ class MRC(Layer):
         # B*5*N*N
         accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
 
-        # B*5*N*N
-        valf = tf.cast(val, tf.float32)
-
-        accuracy *= valf
-
-        valsum = tf.reduce_sum(valf) + params.eps
-
-        accuracysum = tf.reduce_sum(accuracy)
-
-        accuracy = accuracysum / valsum
+        accuracy = tf.reduce_mean(accuracy)
 
         self.add_metric(accuracy, name="acc")
 
@@ -228,10 +211,8 @@ class MRC(Layer):
         # 是实体，预测不是实体
         tn = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.not_equal(span_predict, 1)), tf.float32))
 
-        # 不是有效实体，预测是实体
-        fp = tf.reduce_sum(tf.cast(
-            tf.logical_and(tf.logical_and(tf.equal(span, 0), tf.equal(val, 1)), tf.equal(span_predict, 1)),
-            tf.float32))
+        # 不是实体，预测是实体
+        fp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 0), tf.equal(span_predict, 1)), tf.float32))
 
         # B*5*N*N*1
         span_outputlogits = tf.expand_dims(span_output, axis=-1)
@@ -242,10 +223,7 @@ class MRC(Layer):
         # B*5*N*N
         span_loss = focal_loss(span, span_outputlogits)
 
-        # B*5*N*N
-        span_loss *= valf
-
-        span_loss = tf.reduce_sum(span_loss) / valsum
+        span_loss = tf.reduce_mean(span_loss)
 
         self.add_loss(span_loss)
 
@@ -352,6 +330,11 @@ class USER:
                                     weight_decay_rate=0.01,
                                     epsilon=1.0e-6,
                                     exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
+
+        # optimizer = AdamWeightDecay(learning_rate=params.lr,
+        #                             weight_decay_rate=0.01,
+        #                             epsilon=1.0e-6,
+        #                             exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
 
         model.compile(optimizer=optimizer)
 
