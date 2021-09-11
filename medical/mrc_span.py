@@ -33,9 +33,9 @@ parser.add_argument('--label_num', type=int, default=5, help='number of ner labe
 parser.add_argument('--per_save', type=int, default=3527, help='save model per num')
 parser.add_argument('--check', type=str, default='model/mrc_span', help='The path where model saved')
 parser.add_argument('--mode', type=str, default='predict', help='The mode of train or predict as follows: '
-                                                               'train0: begin to train or retrain'
-                                                               'tran1:continue to train'
-                                                               'predict: predict')
+                                                             'train0: begin to train or retrain'
+                                                             'tran1:continue to train'
+                                                             'predict: predict')
 params = parser.parse_args()
 
 
@@ -93,8 +93,8 @@ def focal_loss(y_true, y_pred, gamma=2.0):
 
     alpha = 0.5
     loss = tf.where(tf.equal(y_true, 1),
-                    -alpha * (1.0 - y_pred) ** gamma * tf.math.log(y_pred),
-                    -(1.0 - alpha) * y_pred ** gamma * tf.math.log(1.0 - y_pred))
+                    -alpha * (1.0 - y_pred) ** gamma * tf.math.log(y_pred + params.eps),
+                    -(1.0 - alpha) * y_pred ** gamma * tf.math.log(1.0 - y_pred + params.eps))
 
     return tf.squeeze(loss, axis=-1)
 
@@ -150,17 +150,32 @@ class MRC(Layer):
         # x: B*N*768,start,end: B*5*N,span,val: B*5*N*N seqlen: B
         x, start, end, span, val, seqlen = inputs
 
+        ##################################### start 和 end 的 logits  ###################################################
+
         # B*N*10
         startend_output = self.dense_startend(x)
 
         # B*10*N
         startend_output = tf.transpose(startend_output, [0, 2, 1])
 
+        ##################################### start 和 end 预测  ########################################################
+
         # B*10*N
         startend_predict = tf.cast(tf.greater(startend_output, 0.5), tf.int32)
 
+        # B*N
+        sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
+
+        # B*10*N
+        sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.int32)
+
+        # B*10*N
+        startend_predict *= sequencemask
+
         # B*5*N,B*5*N
         start_predict, end_predict = tf.split(startend_predict, 2, axis=1)
+
+        #################################### start 和 end 损失  #########################################################
 
         # B*10*N*1
         startend_output = tf.expand_dims(startend_output, axis=-1)
@@ -175,19 +190,19 @@ class MRC(Layer):
         # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
         startend_loss = focal_loss(startend, startend_output)
 
-        # B*N
-        sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
-
         # B*10*N
-        sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.float32)
+        sequencemask = tf.cast(sequencemask, tf.float32)
 
         # B*10*N
         startend_loss *= sequencemask
 
         startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
 
-        self.add_loss(startend_loss)
+        self.add_loss(0.15 * startend_loss)
 
+        ############################################ span 的 logits  ###################################################
+
+        B = tf.shape(x)[0]
         N = tf.shape(x)[1]
 
         # B*N*N*768
@@ -203,8 +218,30 @@ class MRC(Layer):
         # B*5*N*N
         span_output = tf.transpose(span_output, [0, 3, 1, 2])
 
+        ############################################ span 预测  #########################################################
+
+        # N*N 右上三角
+        rightuptria = tf.transpose(tf.sequence_mask(tf.range(1, N + 1), N, tf.int32))
+        rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [params.label_num, 1, 1])
+        rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [B, 1, 1, 1])
+
         # B*5*N*N
         span_predict = tf.cast(tf.greater(span_output, 0.5), tf.int32)
+
+        # B*5*N --> B*5*N*1
+        start_predict_expand = tf.cast(tf.expand_dims(start_predict, axis=-1), tf.int32)
+
+        # B*5*N*N
+        start_predict_expand = tf.tile(start_predict_expand, [1, 1, 1, N])
+
+        # B*5*N --> B*5*1*N
+        end_predict_expand = tf.cast(tf.expand_dims(end_predict, axis=2), tf.int32)
+
+        # B*5*N*N
+        end_predict_expand = tf.tile(end_predict_expand, [1, 1, N, 1])
+
+        # B*5*N*N
+        span_predict = span_predict * start_predict_expand * end_predict_expand * rightuptria
 
         # B*5*N*N
         accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
@@ -222,6 +259,26 @@ class MRC(Layer):
 
         self.add_metric(accuracy, name="acc")
 
+        ########################################### span 损失  ##########################################################
+
+        # B*5*N*N*1
+        span_outputlogits = tf.expand_dims(span_output, axis=-1)
+
+        # B*5*N*N*1
+        spanexpand = tf.expand_dims(span, axis=-1)
+
+        # B*5*N*N
+        span_loss = focal_loss(spanexpand, span_outputlogits)
+
+        # B*5*N*N
+        span_loss *= valf
+
+        span_loss = tf.reduce_sum(span_loss) / valsum
+
+        self.add_loss(0.7 * span_loss)
+
+        ###########################################  TP TN FP  #########################################################
+
         # 是实体，预测是实体
         tp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.equal(span_predict, 1)), tf.float32))
 
@@ -229,25 +286,7 @@ class MRC(Layer):
         tn = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.not_equal(span_predict, 1)), tf.float32))
 
         # 不是有效实体，预测是实体
-        fp = tf.reduce_sum(tf.cast(
-            tf.logical_and(tf.logical_and(tf.equal(span, 0), tf.equal(val, 1)), tf.equal(span_predict, 1)),
-            tf.float32))
-
-        # B*5*N*N*1
-        span_outputlogits = tf.expand_dims(span_output, axis=-1)
-
-        # B*5*N*N*1
-        span = tf.expand_dims(span, axis=-1)
-
-        # B*5*N*N
-        span_loss = focal_loss(span, span_outputlogits)
-
-        # B*5*N*N
-        span_loss *= valf
-
-        span_loss = tf.reduce_sum(span_loss) / valsum
-
-        self.add_loss(span_loss)
+        fp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 0), tf.equal(span_predict, 1)), tf.float32))
 
         return span_predict, start_predict, end_predict, tp, tn, fp
 
@@ -485,14 +524,24 @@ class USER:
 
             span_predict_, _, _, tp_, tn_, fp_ = model.predict(data)
 
+            fw.write("span_real\n")
+            for i in range(len(span)):
+                fw.write(str(i) + ": ")
+                for j in range(len(span[i])):
+                    for k in range(len(span[i, j])):
+                        if val[i, j, k] == 1 and span[i, j, k] == 1:
+                            fw.write("%d;%d\t" % (j, k))
+                fw.write("\n")
+            fw.write("\n")
+
             fw.write("predict\n")
             span_predict_ = span_predict_[0]
             for i in range(len(span_predict_)):
                 fw.write(str(i) + ": ")
                 for j in range(len(span_predict_[i])):
                     for k in range(len(span_predict_[i, j])):
-                        if val[i, j, k] == 1:
-                            fw.write("%d;%d;%d\t" % (j, k, span_predict_[i, j, k]))
+                        if span_predict_[i, j, k] == 1:
+                            fw.write("%d;%d\t" % (j, k))
                 fw.write("\n")
             fw.write("\n")
 
@@ -539,6 +588,7 @@ if __name__ == '__main__':
         '患者精神状况好，无发热，诉右髋部疼痛，饮食差，二便正常，查体：神清，各项生命体征平稳，心肺腹查体未见异常。',
         '女性，88岁，农民，双滦区应营子村人，主因右髋部摔伤后疼痛肿胀，活动受限5小时于2016-10-29；11：12入院。',
         '入院后完善各项检查，给予右下肢持续皮牵引，应用健骨药物治疗，患者略发热，查血常规：白细胞数12.18*10^9/L，中性粒细胞百分比92.00%。',
+        '1患者老年男性，既往有高血压病史5年，血压最高达180/100mmHg，长期服用降压药物治疗，血压控制欠佳。'
     ]
 
     m_samples = len(sentences)
