@@ -1,16 +1,20 @@
 '''
     bert for ner with tf2.0
     bert通过transformers加载
-    内存消耗太大了
-    两句输入bert
+    通过任务Dense来区分 TREATMENT、BODY、SIGNS、CHECK、DISEASE
+    自定义训练过程
 '''
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # 使用GPU
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 屏蔽警告信息
 
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Layer, Dense
 from tensorflow.keras.optimizers import Adam
 from transformers.optimization_tf import AdamWeightDecay
-from transformers import TFBertModel, BertTokenizer, BertConfig
+from transformers import TFBertModel, BertTokenizer
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.initializers import TruncatedNormal
 from tensorflow.keras.losses import BinaryCrossentropy as bce
@@ -19,11 +23,8 @@ from official.nlp.optimization import WarmUp, AdamWeightDecay
 from OtherUtils import load_vocab
 
 import numpy as np
-import sys, os
+import sys
 import argparse
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # 使用GPU
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 屏蔽警告信息
 
 parser = argparse.ArgumentParser(description='manual to this script')
 parser.add_argument('--batch_size', type=int, default=2, help='Batch size during training')
@@ -31,8 +32,8 @@ parser.add_argument('--epochs', type=int, default=20, help='Epochs during traini
 parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing rate')
 parser.add_argument('--eps', type=float, default=1.0e-6, help='epsilon')
 parser.add_argument('--label_num', type=int, default=5, help='number of ner labels')
-parser.add_argument('--per_save', type=int, default=3488, help='save model per num')
-parser.add_argument('--check', type=str, default='model/mrc_span_ns', help='The path where model saved')
+parser.add_argument('--per_save', type=int, default=3527, help='save model per num')
+parser.add_argument('--check', type=str, default='model/mrc_span_tape', help='The path where model saved')
 parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
                                                                'train0: begin to train or retrain'
                                                                'tran1:continue to train'
@@ -114,37 +115,13 @@ class BERT(Layer):
     def __init__(self, **kwargs):
         super(BERT, self).__init__(**kwargs)
 
-        # Config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
-        # Config.num_hidden_layers = 2
-
-        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext",
-                                                # config=Config,
-                                                )
-
-        self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
-
-        self.mrc = self.tokenizer(["找到所有的治疗方案",
-                                   "找到所有的身体部位",
-                                   "找到所有的疾病症状",
-                                   "找到所有的医学检查",
-                                   "找到所有的疾病名称",
-                                   ], add_special_tokens=True, return_tensors="tf", padding=True)["input_ids"]
+        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext")
 
     def call(self, inputs, **kwargs):
-        B = tf.shape(inputs)[0]
-        NC = tf.shape(self.mrc)[1]
-
-        token_type_ids = tf.concat([tf.zeros([B, NC], tf.int32), tf.ones_like(inputs[:, 1:])], axis=1)
-
-        mrc_output = []
-        for i in range(params.label_num):
-            mrc_r = tf.concat([tf.tile(self.mrc[i:i + 1], [B, 1]), inputs[:, 1:]], axis=1)
-
-            mrc_output.append(self.bert(input_ids=mrc_r,
-                                        token_type_ids=token_type_ids,
-                                        attention_mask=tf.cast(tf.greater(mrc_r, 0), tf.int32))[0][:, 10:])
-
-        return tf.stack(mrc_output, axis=1)
+        return self.bert(input_ids=inputs,
+                         token_type_ids=tf.zeros_like(inputs),
+                         attention_mask=tf.cast(tf.greater(inputs, 0), tf.int32)
+                         )[0]
 
 
 class SplitSequence(Layer):
@@ -152,204 +129,38 @@ class SplitSequence(Layer):
         super(SplitSequence, self).__init__(**kwargs)
 
     def call(self, x, **kwargs):
-        return x[:, :, 1:-1]
-
-
-# class MRC(Layer):
-#     def __init__(self, **kwargs):
-#         super(MRC, self).__init__(**kwargs)
-#
-#         self.dense_startend = [Dense(2,
-#                                      kernel_initializer=TruncatedNormal(stddev=0.02),
-#                                      dtype=tf.float32,
-#                                      activation="sigmoid",
-#                                      name='startend' + str(i)) for i in range(params.label_num)]
-#
-#         self.dense_span = Dense(params.label_num,
-#                                 kernel_initializer=TruncatedNormal(stddev=0.02),
-#                                 dtype=tf.float32,
-#                                 activation="sigmoid",
-#                                 name='span')
-#
-#     def call(self, inputs, **kwargs):
-#         # x: B*5*N*768, start,end: B*5*N,span,val: B*5*N*N seqlen: B
-#         x,  start, end, span, val, seqlen = inputs
-#
-#         ##################################### start 和 end 的 logits  ###################################################
-#         # B*1*N*2
-#         startend_output = []
-#         for i in range(params.label_num):
-#             startend_output.append(self.dense_startend[i](x[:,i:i+1]))
-#
-#         # B*5*N*2
-#         startend_output = tf.concat(startend_output, axis=1)
-#
-#         # B*10*N*1
-#         startend_output_logits = tf.concat(tf.split(startend_output, 2, axis=-1), axis=1)
-#
-#         ##################################### start 和 end 预测  ########################################################
-#         # B*10*N
-#         startend_output = tf.squeeze(startend_output_logits, axis=-1)
-#
-#         # B*10*N
-#         startend_predict = tf.cast(tf.greater(startend_output, 0.5), tf.int32)
-#
-#         # B*N
-#         sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
-#
-#         # B*10*N
-#         sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.int32)
-#
-#         # B*10*N
-#         startend_predict *= sequencemask
-#
-#         # B*5*N,B*5*N
-#         start_predict, end_predict = tf.split(startend_predict, 2, axis=1)
-#
-#         #################################### start 和 end 损失  #########################################################
-#
-#         # B*10*N
-#         startend = tf.concat([start, end], axis=1)
-#
-#         # B*10*N*1
-#         startend = tf.expand_dims(startend, axis=-1)
-#
-#         # B*10*N
-#         # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output_logits)
-#         startend_loss = focal_loss(startend, startend_output_logits)
-#
-#         # B*10*N
-#         sequencemask = tf.cast(sequencemask, tf.float32)
-#
-#         # B*10*N
-#         startend_loss *= sequencemask
-#
-#         startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
-#
-#         self.add_loss(0.15 * startend_loss)
-#
-#         ############################################ span 的 logits  ###################################################
-#
-#         B = tf.shape(x)[0]
-#         N = tf.shape(x)[1]
-#
-#         # B*N*N*768
-#         startx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1])
-#         endx = tf.tile(tf.expand_dims(x, 1), [1, N, 1, 1])
-#
-#         # B*N*N*(768*2)
-#         spanx = tf.concat([startx, endx], axis=-1)
-#
-#         # B*N*N*5
-#         span_output = self.dense_span(spanx)
-#
-#         # B*5*N*N
-#         span_output = tf.transpose(span_output, [0, 3, 1, 2])
-#
-#         ############################################ span 预测  #########################################################
-#
-#         # N*N 右上三角
-#         rightuptria = tf.transpose(tf.sequence_mask(tf.range(1, N + 1), N, tf.int32))
-#         rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [params.label_num, 1, 1])
-#         rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [B, 1, 1, 1])
-#
-#         # B*5*N*N
-#         span_predict = tf.cast(tf.greater(span_output, 0.5), tf.int32)
-#
-#         # B*5*N --> B*5*N*1
-#         start_predict_expand = tf.cast(tf.expand_dims(start_predict, axis=-1), tf.int32)
-#
-#         # B*5*N*N
-#         start_predict_expand = tf.tile(start_predict_expand, [1, 1, 1, N])
-#
-#         # B*5*N --> B*5*1*N
-#         end_predict_expand = tf.cast(tf.expand_dims(end_predict, axis=2), tf.int32)
-#
-#         # B*5*N*N
-#         end_predict_expand = tf.tile(end_predict_expand, [1, 1, N, 1])
-#
-#         # B*5*N*N
-#         span_predict = span_predict * start_predict_expand * end_predict_expand * rightuptria
-#
-#         # B*5*N*N
-#         accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
-#
-#         # B*5*N*N
-#         valf = tf.cast(val, tf.float32)
-#
-#         accuracy *= valf
-#
-#         valsum = tf.reduce_sum(valf) + params.eps
-#
-#         accuracysum = tf.reduce_sum(accuracy)
-#
-#         accuracy = accuracysum / valsum
-#
-#         self.add_metric(accuracy, name="acc")
-#
-#         ########################################### span 损失  ##########################################################
-#
-#         # B*5*N*N*1
-#         span_outputlogits = tf.expand_dims(span_output, axis=-1)
-#
-#         # B*5*N*N*1
-#         spanexpand = tf.expand_dims(span, axis=-1)
-#
-#         # B*5*N*N
-#         span_loss = focal_loss(spanexpand, span_outputlogits)
-#
-#         # B*5*N*N
-#         span_loss *= valf
-#
-#         span_loss = tf.reduce_sum(span_loss) / valsum
-#
-#         self.add_loss(0.7 * span_loss)
-#
-#         ###########################################  TP TN FP  #########################################################
-#
-#         # 是实体，预测是实体
-#         tp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.equal(span_predict, 1)), tf.float32))
-#
-#         # 是实体，预测不是实体
-#         tn = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.not_equal(span_predict, 1)), tf.float32))
-#
-#         # 不是有效实体，预测是实体
-#         fp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 0), tf.equal(span_predict, 1)), tf.float32))
-#
-#         return span_predict, start_predict, end_predict, tp, tn, fp
+        return x[:, 1:-1]
 
 
 class MRC(Layer):
     def __init__(self, **kwargs):
         super(MRC, self).__init__(**kwargs)
 
-        self.dense_startend = Dense(2,
+        self.dense_startend = Dense(2 * params.label_num,
                                     kernel_initializer=TruncatedNormal(stddev=0.02),
                                     dtype=tf.float32,
                                     activation="sigmoid",
                                     name='startend')
 
-        self.dense_span = Dense(1,
+        self.dense_span = Dense(params.label_num,
                                 kernel_initializer=TruncatedNormal(stddev=0.02),
                                 dtype=tf.float32,
                                 activation="sigmoid",
                                 name='span')
 
     def call(self, inputs, **kwargs):
-        # x: B*5*N*768 start,end: B*5*N span,val: B*5*N*N seqlen: B
+        # x: B*N*768,start,end: B*5*N,span,val: B*5*N*N seqlen: B
         x, start, end, span, val, seqlen = inputs
 
         ##################################### start 和 end 的 logits  ###################################################
-        # B*5*N*2
+
+        # B*N*10
         startend_output = self.dense_startend(x)
 
-        # B*10*N*1
-        startend_output_logits = tf.concat(tf.split(startend_output, 2, axis=-1), axis=1)
+        # B*10*N
+        startend_output = tf.transpose(startend_output, [0, 2, 1])
 
         ##################################### start 和 end 预测  ########################################################
-
-        # B*10*N
-        startend_output = tf.squeeze(startend_output_logits, axis=-1)
 
         # B*10*N
         startend_predict = tf.cast(tf.greater(startend_output, 0.5), tf.int32)
@@ -368,6 +179,9 @@ class MRC(Layer):
 
         #################################### start 和 end 损失  #########################################################
 
+        # B*10*N*1
+        startend_output = tf.expand_dims(startend_output, axis=-1)
+
         # B*10*N
         startend = tf.concat([start, end], axis=1)
 
@@ -375,8 +189,8 @@ class MRC(Layer):
         startend = tf.expand_dims(startend, axis=-1)
 
         # B*10*N
-        # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output_logits)
-        startend_loss = focal_loss(startend, startend_output_logits)
+        # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
+        startend_loss = focal_loss(startend, startend_output)
 
         # B*10*N
         sequencemask = tf.cast(sequencemask, tf.float32)
@@ -386,28 +200,23 @@ class MRC(Layer):
 
         startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
 
-        self.add_loss(0.15 * startend_loss)
-
         ############################################ span 的 logits  ###################################################
 
         B = tf.shape(x)[0]
-        N = tf.shape(x)[2]
+        N = tf.shape(x)[1]
 
-        # B*5*N*N*768
-        startx = tf.tile(tf.expand_dims(x, 3), [1, 1, 1, N, 1])
-        endx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1, 1])
+        # B*N*N*768
+        startx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1])
+        endx = tf.tile(tf.expand_dims(x, 1), [1, N, 1, 1])
 
-        # # B*5*N*N*(768*2)
-        # spanx = tf.concat([startx, endx], axis=-1)
+        # B*N*N*(768*2)
+        spanx = tf.concat([startx, endx], axis=-1)
 
-        # B*5*N*N*768
-        spanx = startx + endx
-
-        # B*5*N*N*1
-        span_output_logits = self.dense_span(spanx)
+        # B*N*N*5
+        span_output = self.dense_span(spanx)
 
         # B*5*N*N
-        span_output = tf.squeeze(span_output_logits, axis=-1)
+        span_output = tf.transpose(span_output, [0, 3, 1, 2])
 
         ############################################ span 预测  #########################################################
 
@@ -442,28 +251,27 @@ class MRC(Layer):
 
         accuracy *= valf
 
-        valsum = tf.reduce_sum(valf) + params.eps
+        valsum = tf.reduce_sum(valf)
 
         accuracysum = tf.reduce_sum(accuracy)
 
-        accuracy = accuracysum / valsum
-
-        self.add_metric(accuracy, name="acc")
-
         ########################################### span 损失  ##########################################################
+
+        # B*5*N*N*1
+        span_outputlogits = tf.expand_dims(span_output, axis=-1)
 
         # B*5*N*N*1
         spanexpand = tf.expand_dims(span, axis=-1)
 
         # B*5*N*N
-        span_loss = focal_loss(spanexpand, span_output_logits)
+        span_loss = focal_loss(spanexpand, span_outputlogits)
 
         # B*5*N*N
         span_loss *= valf
 
-        span_loss = tf.reduce_sum(span_loss) / valsum
+        span_loss = tf.reduce_sum(span_loss) / (valsum + params.eps)
 
-        self.add_loss(0.7 * span_loss)
+        loss = 0.15 * startend_loss + 0.7 * span_loss
 
         ###########################################  TP TN FP  #########################################################
 
@@ -476,34 +284,7 @@ class MRC(Layer):
         # 不是有效实体，预测是实体
         fp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 0), tf.equal(span_predict, 1)), tf.float32))
 
-        return span_predict, start_predict, end_predict, tp, tn, fp
-
-
-class CheckCallback(tf.keras.callbacks.Callback):
-    def __init__(self, validation):
-        super(CheckCallback, self).__init__()
-
-        self.validation_data = validation
-
-    def on_epoch_end(self, epoch, logs=None):
-        tp, tn, fp = 0.0, 0.0, 0.0
-
-        for data in self.validation_data:
-            _, _, _, tp_, tn_, fp_ = self.model.predict(data)
-
-            tp += tp_
-            tn += tn_
-            fp += fp_
-
-        precision = tp / (tp + fp + params.eps)
-        recall = tp / (tp + tn + params.eps)
-        f1 = 2.0 * precision * recall / (precision + recall + params.eps)
-
-        sys.stdout.write('\nprecision: %.4f recall: %.4f f1: %.4f\n\n' % (precision, recall, f1))
-        sys.stdout.flush()
-
-        # predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
-        # querycheck(predict)
+        return span_predict, start_predict, end_predict, tp, tn, fp, loss, accuracysum, valsum
 
 
 def querycheck(predict, start_predict, end_predict):
@@ -527,6 +308,26 @@ def querycheck(predict, start_predict, end_predict):
         sys.stdout.write('\n\n')
 
     sys.stdout.flush()
+
+
+@tf.function(experimental_relax_shapes=True)
+def train_step(data, model, optimizer):
+    with tf.GradientTape() as tape:
+        _, _, _, tp, tn, fp, loss, accuracysum, valsum = model(data, training=True)
+
+    trainable_variables = model.trainable_variables
+
+    gradients = tape.gradient(loss, trainable_variables)
+    optimizer.apply_gradients(zip(gradients, trainable_variables))
+
+    return tp, tn, fp, loss, accuracysum, valsum
+
+
+@tf.function(experimental_relax_shapes=True)
+def dev_step(data, model):
+    _, _, _, tp, tn, fp, loss, accuracysum, valsum = model(data, training=False)
+
+    return tp, tn, fp, loss, accuracysum, valsum
 
 
 class USER:
@@ -559,6 +360,19 @@ class USER:
         return model
 
     def train(self):
+        history = {
+            "loss": [],
+            "acc": [],
+            "precision": [],
+            "recall": [],
+            "f1": [],
+            "val_loss": [],
+            "val_acc": [],
+            "val_precision": [],
+            "val_recall": [],
+            "val_f1": []
+        }
+
         model = self.build_model()
 
         if params.mode == 'train1':
@@ -580,9 +394,7 @@ class USER:
                                     epsilon=1.0e-6,
                                     exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
 
-        model.compile(optimizer=optimizer)
-
-        batch_data = batched_data(['data/TFRecordFiles/train_span_short.tfrecord'],
+        train_data = batched_data(['data/TFRecordFiles/train_span.tfrecord'],
                                   single_example_parser,
                                   params.batch_size,
                                   padded_shapes={"sen": [-1],
@@ -593,7 +405,7 @@ class USER:
                                                  },
                                   buffer_size=100 * params.batch_size)
 
-        dev_data = batched_data(['data/TFRecordFiles/dev_span_short.tfrecord'],
+        dev_data = batched_data(['data/TFRecordFiles/dev_span.tfrecord'],
                                 single_example_parser,
                                 params.batch_size,
                                 padded_shapes={"sen": [-1],
@@ -603,23 +415,106 @@ class USER:
                                                "val": [params.label_num, -1, -1],
                                                },
                                 buffer_size=100 * params.batch_size)
+        f1_max = 0.0
 
-        callbacks = [
-            EarlyStopping(monitor='val_acc', patience=3),
-            ModelCheckpoint(filepath=params.check + '/mrc.h5',
-                            monitor='val_acc',
-                            save_best_only=True),
-            CheckCallback(dev_data)
-        ]
+        for epoch in range(params.epochs):
+            tp = 0.
+            tn = 0.
+            fp = 0.
 
-        history = model.fit(batch_data,
-                            epochs=params.epochs,
-                            validation_data=dev_data,
-                            callbacks=callbacks
-                            )
+            loss = 0.
+            acc = 0.
+            val = 0.
+
+            for batch, data in enumerate(train_data):
+                tp_, tn_, fp_, loss_, accuracysum_, valsum_ = train_step(data, model, optimizer)
+
+                tp += tp_
+                tn += tn_
+                fp += fp_
+                loss += loss_
+                acc += accuracysum_
+                val += valsum_
+
+                loss_av = loss / (batch + 1.)
+                acc_av = acc / (val + params.eps)
+
+                precision = tp / (tp + fp + params.eps)
+                recall = tp / (tp + tn + params.eps)
+                f1 = 2.0 * precision * recall / (precision + recall + params.eps)
+
+                completeratio = batch / params.per_save
+                total_len = 20
+                rationum = int(completeratio * total_len)
+                if rationum < total_len:
+                    ratiogui = "=" * rationum + ">" + "." * (total_len - 1 - rationum)
+                else:
+                    ratiogui = "=" * total_len
+
+                print(
+                    '\rEpoch %d/%d %d/%d [%s] -loss: %.6f -acc:%6.1f -precision:%6.1f -recall:%6.1f -f1:%6.1f' % (
+                        epoch + 1, params.epochs, batch + 1, params.per_save,
+                        ratiogui,
+                        loss_av, 100.0 * acc_av,
+                        100.0 * precision, 100.0 * recall, 100.0 * f1,
+                    ), end=""
+                )
+
+            history["loss"].append(loss_av)
+            history["acc"].append(acc_av)
+            history["precision"].append(precision)
+            history["recall"].append(recall)
+            history["f1"].append(f1)
+
+            loss_val, acc_val, precision_val, recall_val, f1_val = self.dev_train(dev_data, model)
+
+            print(" -val_loss: %.6f -val_acc:%6.1f -val_precision:%6.1f -val_recall:%6.1f -val_f1:%6.1f\n" % (
+                loss_val, 100.0 * acc_val,
+                100.0 * precision_val, 100.0 * recall_val, 100.0 * f1_val))
+
+            history["val_loss"].append(loss_val)
+            history["val_acc"].append(acc_val)
+            history["val_precision"].append(precision_val)
+            history["val_recall"].append(recall_val)
+            history["val_f1"].append(f1_val)
+
+            if f1_val > f1_max:
+                model.save_weights(params.check + '/mrc.h5')
+                f1_max = f1_val
 
         with open(params.check + "/history.txt", "w", encoding="utf-8") as fw:
-            fw.write(str(history.history))
+            fw.write(str(history))
+
+    def dev_train(self, dev_data, model):
+        tp = []
+        tn = []
+        fp = []
+
+        loss = []
+        acc = []
+        val = []
+
+        for batch, data in enumerate(dev_data):
+            tp_, tn_, fp_, loss_, accuracysum_, valsum_ = dev_step(data, model)
+
+            tp.append(tp_)
+            tn.append(tn_)
+            fp.append(fp_)
+            loss.append(loss_)
+            acc.append(accuracysum_)
+            val.append(valsum_)
+
+        loss_av = np.mean(loss)
+        acc_av = np.sum(acc) / (np.sum(val) + params.eps)
+        tp_sum = np.sum(tp)
+        tn_sum = np.sum(tn)
+        fp_sum = np.sum(fp)
+
+        precision = tp_sum / (tp_sum + fp_sum + params.eps)
+        recall = tp_sum / (tp_sum + tn_sum + params.eps)
+        f1 = 2.0 * precision * recall / (precision + recall + params.eps)
+
+        return loss_av, acc_av, precision, recall, f1
 
     def predict(self):
         model = self.build_model()
@@ -640,7 +535,7 @@ class USER:
         model = self.build_model()
         model.load_weights(params.check + '/mrc.h5')
 
-        dev_data = batched_data(['data/TFRecordFiles/dev_span_short.tfrecord'],
+        dev_data = batched_data(['data/TFRecordFiles/dev_span.tfrecord'],
                                 single_example_parser,
                                 1,
                                 padded_shapes={"sen": [-1],
@@ -776,8 +671,7 @@ if __name__ == '__main__':
         '患者精神状况好，无发热，诉右髋部疼痛，饮食差，二便正常，查体：神清，各项生命体征平稳，心肺腹查体未见异常。',
         '女性，88岁，农民，双滦区应营子村人，主因右髋部摔伤后疼痛肿胀，活动受限5小时于2016-10-29；11：12入院。',
         '入院后完善各项检查，给予右下肢持续皮牵引，应用健骨药物治疗，患者略发热，查血常规：白细胞数12.18*10^9/L，中性粒细胞百分比92.00%。',
-        '1患者老年男性，既往有高血压病史5年，血压最高达180/100mmHg，长期服用降压药物治疗，血压控制欠佳。',
-        '头颅无畸形，双眼睑无浮肿，结膜无充血及苍白，巩膜无黄染，双侧瞳孔正大等圆，对光反射灵敏。',
+        '1患者老年男性，既往有高血压病史5年，血压最高达180/100mmHg，长期服用降压药物治疗，血压控制欠佳。'
     ]
 
     m_samples = len(sentences)
