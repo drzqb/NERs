@@ -1,7 +1,8 @@
 '''
     bert for ner with tf2.0
     bert通过transformers加载
-    通过任务Dense来区分 TREATMENT、BODY、SIGNS、CHECK、DISEASE
+    内存消耗太大了
+    两句输入bert
 '''
 
 import tensorflow as tf
@@ -9,7 +10,7 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Layer, Dense
 from tensorflow.keras.optimizers import Adam
 from transformers.optimization_tf import AdamWeightDecay
-from transformers import TFBertModel, BertTokenizer
+from transformers import TFBertModel, BertTokenizer, BertConfig
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.initializers import TruncatedNormal
 from tensorflow.keras.losses import BinaryCrossentropy as bce
@@ -31,11 +32,11 @@ parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing ra
 parser.add_argument('--eps', type=float, default=1.0e-6, help='epsilon')
 parser.add_argument('--label_num', type=int, default=5, help='number of ner labels')
 parser.add_argument('--per_save', type=int, default=3527, help='save model per num')
-parser.add_argument('--check', type=str, default='model/mrc_span', help='The path where model saved')
+parser.add_argument('--check', type=str, default='model/mrc_span_ns', help='The path where model saved')
 parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
-                                                             'train0: begin to train or retrain'
-                                                             'tran1:continue to train'
-                                                             'predict: predict')
+                                                               'train0: begin to train or retrain'
+                                                               'tran1:continue to train'
+                                                               'predict: predict')
 params = parser.parse_args()
 
 
@@ -113,13 +114,35 @@ class BERT(Layer):
     def __init__(self, **kwargs):
         super(BERT, self).__init__(**kwargs)
 
-        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        Config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        Config.num_hidden_layers = 2
+
+        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext", config=Config)
+
+        self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
+
+        self.mrc = self.tokenizer(["找到所有的治疗方案",
+                                   "找到所有的身体部位",
+                                   "找到所有的疾病症状",
+                                   "找到所有的医学检查",
+                                   "找到所有的疾病名称",
+                                   ], add_special_tokens=True, return_tensors="tf", padding=True)["input_ids"]
 
     def call(self, inputs, **kwargs):
-        return self.bert(input_ids=inputs,
-                         token_type_ids=tf.zeros_like(inputs),
-                         attention_mask=tf.cast(tf.greater(inputs, 0), tf.int32)
-                         )[0]
+        B = tf.shape(inputs)[0]
+        NC = tf.shape(self.mrc)[1]
+
+        token_type_ids = tf.concat([tf.zeros([B, NC], tf.int32), tf.ones_like(inputs[:, 1:])], axis=1)
+
+        mrc_output = []
+        for i in range(params.label_num):
+            mrc_r = tf.concat([tf.tile(self.mrc[i:i + 1], [B, 1]), inputs[:, 1:]], axis=1)
+
+            mrc_output.append(self.bert(input_ids=mrc_r,
+                                        token_type_ids=token_type_ids,
+                                        attention_mask=tf.cast(tf.greater(mrc_r, 0), tf.int32))[0][:, 10:])
+
+        return tf.stack(mrc_output, axis=1)
 
 
 class SplitSequence(Layer):
@@ -127,38 +150,204 @@ class SplitSequence(Layer):
         super(SplitSequence, self).__init__(**kwargs)
 
     def call(self, x, **kwargs):
-        return x[:, 1:-1]
+        return x[:, :, 1:-1]
+
+
+# class MRC(Layer):
+#     def __init__(self, **kwargs):
+#         super(MRC, self).__init__(**kwargs)
+#
+#         self.dense_startend = [Dense(2,
+#                                      kernel_initializer=TruncatedNormal(stddev=0.02),
+#                                      dtype=tf.float32,
+#                                      activation="sigmoid",
+#                                      name='startend' + str(i)) for i in range(params.label_num)]
+#
+#         self.dense_span = Dense(params.label_num,
+#                                 kernel_initializer=TruncatedNormal(stddev=0.02),
+#                                 dtype=tf.float32,
+#                                 activation="sigmoid",
+#                                 name='span')
+#
+#     def call(self, inputs, **kwargs):
+#         # x: B*5*N*768, start,end: B*5*N,span,val: B*5*N*N seqlen: B
+#         x,  start, end, span, val, seqlen = inputs
+#
+#         ##################################### start 和 end 的 logits  ###################################################
+#         # B*1*N*2
+#         startend_output = []
+#         for i in range(params.label_num):
+#             startend_output.append(self.dense_startend[i](x[:,i:i+1]))
+#
+#         # B*5*N*2
+#         startend_output = tf.concat(startend_output, axis=1)
+#
+#         # B*10*N*1
+#         startend_output_logits = tf.concat(tf.split(startend_output, 2, axis=-1), axis=1)
+#
+#         ##################################### start 和 end 预测  ########################################################
+#         # B*10*N
+#         startend_output = tf.squeeze(startend_output_logits, axis=-1)
+#
+#         # B*10*N
+#         startend_predict = tf.cast(tf.greater(startend_output, 0.5), tf.int32)
+#
+#         # B*N
+#         sequencemask = tf.sequence_mask(seqlen, tf.reduce_max(seqlen))
+#
+#         # B*10*N
+#         sequencemask = tf.cast(tf.tile(tf.expand_dims(sequencemask, axis=1), [1, 2 * params.label_num, 1]), tf.int32)
+#
+#         # B*10*N
+#         startend_predict *= sequencemask
+#
+#         # B*5*N,B*5*N
+#         start_predict, end_predict = tf.split(startend_predict, 2, axis=1)
+#
+#         #################################### start 和 end 损失  #########################################################
+#
+#         # B*10*N
+#         startend = tf.concat([start, end], axis=1)
+#
+#         # B*10*N*1
+#         startend = tf.expand_dims(startend, axis=-1)
+#
+#         # B*10*N
+#         # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output_logits)
+#         startend_loss = focal_loss(startend, startend_output_logits)
+#
+#         # B*10*N
+#         sequencemask = tf.cast(sequencemask, tf.float32)
+#
+#         # B*10*N
+#         startend_loss *= sequencemask
+#
+#         startend_loss = tf.reduce_sum(startend_loss) / tf.reduce_sum(sequencemask)
+#
+#         self.add_loss(0.15 * startend_loss)
+#
+#         ############################################ span 的 logits  ###################################################
+#
+#         B = tf.shape(x)[0]
+#         N = tf.shape(x)[1]
+#
+#         # B*N*N*768
+#         startx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1])
+#         endx = tf.tile(tf.expand_dims(x, 1), [1, N, 1, 1])
+#
+#         # B*N*N*(768*2)
+#         spanx = tf.concat([startx, endx], axis=-1)
+#
+#         # B*N*N*5
+#         span_output = self.dense_span(spanx)
+#
+#         # B*5*N*N
+#         span_output = tf.transpose(span_output, [0, 3, 1, 2])
+#
+#         ############################################ span 预测  #########################################################
+#
+#         # N*N 右上三角
+#         rightuptria = tf.transpose(tf.sequence_mask(tf.range(1, N + 1), N, tf.int32))
+#         rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [params.label_num, 1, 1])
+#         rightuptria = tf.tile(tf.expand_dims(rightuptria, axis=0), [B, 1, 1, 1])
+#
+#         # B*5*N*N
+#         span_predict = tf.cast(tf.greater(span_output, 0.5), tf.int32)
+#
+#         # B*5*N --> B*5*N*1
+#         start_predict_expand = tf.cast(tf.expand_dims(start_predict, axis=-1), tf.int32)
+#
+#         # B*5*N*N
+#         start_predict_expand = tf.tile(start_predict_expand, [1, 1, 1, N])
+#
+#         # B*5*N --> B*5*1*N
+#         end_predict_expand = tf.cast(tf.expand_dims(end_predict, axis=2), tf.int32)
+#
+#         # B*5*N*N
+#         end_predict_expand = tf.tile(end_predict_expand, [1, 1, N, 1])
+#
+#         # B*5*N*N
+#         span_predict = span_predict * start_predict_expand * end_predict_expand * rightuptria
+#
+#         # B*5*N*N
+#         accuracy = tf.cast(tf.equal(span_predict, span), tf.float32)
+#
+#         # B*5*N*N
+#         valf = tf.cast(val, tf.float32)
+#
+#         accuracy *= valf
+#
+#         valsum = tf.reduce_sum(valf) + params.eps
+#
+#         accuracysum = tf.reduce_sum(accuracy)
+#
+#         accuracy = accuracysum / valsum
+#
+#         self.add_metric(accuracy, name="acc")
+#
+#         ########################################### span 损失  ##########################################################
+#
+#         # B*5*N*N*1
+#         span_outputlogits = tf.expand_dims(span_output, axis=-1)
+#
+#         # B*5*N*N*1
+#         spanexpand = tf.expand_dims(span, axis=-1)
+#
+#         # B*5*N*N
+#         span_loss = focal_loss(spanexpand, span_outputlogits)
+#
+#         # B*5*N*N
+#         span_loss *= valf
+#
+#         span_loss = tf.reduce_sum(span_loss) / valsum
+#
+#         self.add_loss(0.7 * span_loss)
+#
+#         ###########################################  TP TN FP  #########################################################
+#
+#         # 是实体，预测是实体
+#         tp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.equal(span_predict, 1)), tf.float32))
+#
+#         # 是实体，预测不是实体
+#         tn = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 1), tf.not_equal(span_predict, 1)), tf.float32))
+#
+#         # 不是有效实体，预测是实体
+#         fp = tf.reduce_sum(tf.cast(tf.logical_and(tf.equal(span, 0), tf.equal(span_predict, 1)), tf.float32))
+#
+#         return span_predict, start_predict, end_predict, tp, tn, fp
 
 
 class MRC(Layer):
     def __init__(self, **kwargs):
         super(MRC, self).__init__(**kwargs)
 
-        self.dense_startend = Dense(2 * params.label_num,
+        self.dense_startend = Dense(2,
                                     kernel_initializer=TruncatedNormal(stddev=0.02),
                                     dtype=tf.float32,
                                     activation="sigmoid",
                                     name='startend')
 
-        self.dense_span = Dense(params.label_num,
+        self.dense_span = Dense(1,
                                 kernel_initializer=TruncatedNormal(stddev=0.02),
                                 dtype=tf.float32,
                                 activation="sigmoid",
                                 name='span')
 
     def call(self, inputs, **kwargs):
-        # x: B*N*768,start,end: B*5*N,span,val: B*5*N*N seqlen: B
+        # x: B*5*N*768 start,end: B*5*N span,val: B*5*N*N seqlen: B
         x, start, end, span, val, seqlen = inputs
 
         ##################################### start 和 end 的 logits  ###################################################
-
-        # B*N*10
+        # B*5*N*2
         startend_output = self.dense_startend(x)
 
-        # B*10*N
-        startend_output = tf.transpose(startend_output, [0, 2, 1])
+        # B*10*N*1
+        startend_output_logits = tf.concat(tf.split(startend_output, 2, axis=-1), axis=1)
 
         ##################################### start 和 end 预测  ########################################################
+
+        # B*10*N
+        startend_output = tf.squeeze(startend_output_logits, axis=-1)
 
         # B*10*N
         startend_predict = tf.cast(tf.greater(startend_output, 0.5), tf.int32)
@@ -177,9 +366,6 @@ class MRC(Layer):
 
         #################################### start 和 end 损失  #########################################################
 
-        # B*10*N*1
-        startend_output = tf.expand_dims(startend_output, axis=-1)
-
         # B*10*N
         startend = tf.concat([start, end], axis=1)
 
@@ -187,8 +373,8 @@ class MRC(Layer):
         startend = tf.expand_dims(startend, axis=-1)
 
         # B*10*N
-        # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output)
-        startend_loss = focal_loss(startend, startend_output)
+        # startend_loss = bce(reduction=tf.keras.losses.Reduction.NONE)(startend, startend_output_logits)
+        startend_loss = focal_loss(startend, startend_output_logits)
 
         # B*10*N
         sequencemask = tf.cast(sequencemask, tf.float32)
@@ -203,20 +389,23 @@ class MRC(Layer):
         ############################################ span 的 logits  ###################################################
 
         B = tf.shape(x)[0]
-        N = tf.shape(x)[1]
+        N = tf.shape(x)[2]
 
-        # B*N*N*768
-        startx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1])
-        endx = tf.tile(tf.expand_dims(x, 1), [1, N, 1, 1])
+        # B*5*N*N*768
+        startx = tf.tile(tf.expand_dims(x, 3), [1, 1, 1, N, 1])
+        endx = tf.tile(tf.expand_dims(x, 2), [1, 1, N, 1, 1])
 
-        # B*N*N*(768*2)
-        spanx = tf.concat([startx, endx], axis=-1)
+        # # B*5*N*N*(768*2)
+        # spanx = tf.concat([startx, endx], axis=-1)
 
-        # B*N*N*5
-        span_output = self.dense_span(spanx)
+        # B*5*N*N*768
+        spanx = startx + endx
+
+        # B*5*N*N*1
+        span_output_logits = self.dense_span(spanx)
 
         # B*5*N*N
-        span_output = tf.transpose(span_output, [0, 3, 1, 2])
+        span_output = tf.squeeze(span_output_logits, axis=-1)
 
         ############################################ span 预测  #########################################################
 
@@ -262,13 +451,10 @@ class MRC(Layer):
         ########################################### span 损失  ##########################################################
 
         # B*5*N*N*1
-        span_outputlogits = tf.expand_dims(span_output, axis=-1)
-
-        # B*5*N*N*1
         spanexpand = tf.expand_dims(span, axis=-1)
 
         # B*5*N*N
-        span_loss = focal_loss(spanexpand, span_outputlogits)
+        span_loss = focal_loss(spanexpand, span_output_logits)
 
         # B*5*N*N
         span_loss *= valf
