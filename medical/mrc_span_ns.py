@@ -31,7 +31,7 @@ parser.add_argument('--epochs', type=int, default=20, help='Epochs during traini
 parser.add_argument('--lr', type=float, default=1.0e-5, help='Initial learing rate')
 parser.add_argument('--eps', type=float, default=1.0e-6, help='epsilon')
 parser.add_argument('--label_num', type=int, default=5, help='number of ner labels')
-parser.add_argument('--per_save', type=int, default=3527, help='save model per num')
+parser.add_argument('--per_save', type=int, default=3488, help='save model per num')
 parser.add_argument('--check', type=str, default='model/mrc_span_ns', help='The path where model saved')
 parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
                                                                'train0: begin to train or retrain'
@@ -114,10 +114,12 @@ class BERT(Layer):
     def __init__(self, **kwargs):
         super(BERT, self).__init__(**kwargs)
 
-        Config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
-        Config.num_hidden_layers = 2
+        # Config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        # Config.num_hidden_layers = 2
 
-        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext", config=Config)
+        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext",
+                                                # config=Config,
+                                                )
 
         self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
 
@@ -580,7 +582,7 @@ class USER:
 
         model.compile(optimizer=optimizer)
 
-        batch_data = batched_data(['data/TFRecordFiles/train_span.tfrecord'],
+        batch_data = batched_data(['data/TFRecordFiles/train_span_short.tfrecord'],
                                   single_example_parser,
                                   params.batch_size,
                                   padded_shapes={"sen": [-1],
@@ -591,7 +593,7 @@ class USER:
                                                  },
                                   buffer_size=100 * params.batch_size)
 
-        dev_data = batched_data(['data/TFRecordFiles/dev_span.tfrecord'],
+        dev_data = batched_data(['data/TFRecordFiles/dev_span_short.tfrecord'],
                                 single_example_parser,
                                 params.batch_size,
                                 padded_shapes={"sen": [-1],
@@ -638,7 +640,7 @@ class USER:
         model = self.build_model()
         model.load_weights(params.check + '/mrc.h5')
 
-        dev_data = batched_data(['data/TFRecordFiles/dev_span.tfrecord'],
+        dev_data = batched_data(['data/TFRecordFiles/dev_span_short.tfrecord'],
                                 single_example_parser,
                                 1,
                                 padded_shapes={"sen": [-1],

@@ -206,6 +206,9 @@ def medicalspan(filepath, train_tfrecordfilepath, dev_tfrecordfilepath):
         text = data["context"]
         seqlen = len(text)
 
+        if seqlen > 150:
+            continue
+
         sent2id = [101]
         sent2id += [char_dict.get(char, char_dict["[UNK]"]) for char in text]
         sent2id += [102]
@@ -322,6 +325,6 @@ if __name__ == "__main__":
 
     # bieso2span()
     medicalspan("data/OriginalFiles/train_span.txt",
-                "data/TFRecordFiles/train_span.tfrecord",  # 7036
-                "data/TFRecordFiles/dev_span.tfrecord",  # 781
+                "data/TFRecordFiles/train_span_short.tfrecord",  # 6976
+                "data/TFRecordFiles/dev_span_short.tfrecord",  # 770
                 )
