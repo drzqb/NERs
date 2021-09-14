@@ -418,29 +418,32 @@ class USER:
         f1_max = 0.0
 
         for epoch in range(params.epochs):
-            tp = 0.
-            tn = 0.
-            fp = 0.
+            tp = []
+            tn = []
+            fp = []
 
-            loss = 0.
-            acc = 0.
-            val = 0.
+            loss = []
+            acc = []
+            val = []
 
             for batch, data in enumerate(train_data):
                 tp_, tn_, fp_, loss_, accuracysum_, valsum_ = train_step(data, model, optimizer)
 
-                tp += tp_
-                tn += tn_
-                fp += fp_
-                loss += loss_
-                acc += accuracysum_
-                val += valsum_
+                tp.append(tp_)
+                tn.append(tn_)
+                fp.append(fp_)
+                loss.append(loss_)
+                acc.append(accuracysum_)
+                val.append(valsum_)
 
-                loss_av = loss / (batch + 1.)
-                acc_av = acc / (val + params.eps)
+                loss_av = np.mean(loss)
+                acc_av = np.sum(acc) / (np.sum(val) + params.eps)
 
-                precision = tp / (tp + fp + params.eps)
-                recall = tp / (tp + tn + params.eps)
+                tpsum = np.sum(tp)
+                tnsum = np.sum(tn)
+                fpsum = np.sum(fp)
+                precision = tpsum / (tpsum + fpsum + params.eps)
+                recall = tpsum / (tpsum + tnsum + params.eps)
                 f1 = 2.0 * precision * recall / (precision + recall + params.eps)
 
                 completeratio = batch / params.per_save
