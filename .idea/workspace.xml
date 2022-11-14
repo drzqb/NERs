@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
+      <change afterPath="$PROJECT_DIR$/medical/asdfa.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/bertcrf_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/grucrf.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/grucrf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/grucrfe.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/grucrfe.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/grucrfix.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_ns_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_ns_tiny.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_ns_tiny_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_ns_tiny_tape.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_sp_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_sp_tiny.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_sp_tiny_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_tiny.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_tiny_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_tiny_tape.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/mrc_span_tiny_tape_PRF.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/robertgrucrfw.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/testcompute.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/tinybertcrf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medical/tinybertcrf_PRF.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/bertcrf.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/bertcrf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/mrc_span.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/mrc_span.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/mrc_span_ns.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/mrc_span_ns.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/mrc_span_sp.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/mrc_span_sp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/mrc_span_tape.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/mrc_span_tape.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/visualize.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/visualize.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1wlYtQ41hwvonLL7n6JmIkHuf6z" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="添加" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/medical" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\pythonwork\NERs\medical" />
+      <recent name="D:\pythonwork\NERs\MRC" />
+      <recent name="D:\pythonwork\NERs\MRC\data\OriginalFiles" />
+      <recent name="D:\pythonwork\NERs\resume" />
+      <recent name="D:\pythonwork\NERs\resume\data\OriginalFiles" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.mrc_span_ns_tiny_tape">
+    <configuration name="mrc_span_ns_tiny" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/mrc_span_ns_tiny.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_span_ns_tiny_tape" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/mrc_span_ns_tiny_tape.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_span_sp_tiny" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/mrc_span_sp_tiny.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mrc_span_tiny_tape" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/mrc_span_tiny_tape.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.mrc_span_ns_tiny_tape" />
+        <item itemvalue="Python.mrc_span_tiny_tape" />
+        <item itemvalue="Python.mrc_span_ns_tiny" />
+        <item itemvalue="Python.mrc_span_sp_tiny" />
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="" />
+      <created>1629034856584</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1629034856584</updated>
+      <workItem from="1629034859304" duration="9908000" />
+      <workItem from="1629092820631" duration="9692000" />
+      <workItem from="1629116506743" duration="558000" />
+      <workItem from="1630430634587" duration="759000" />
+      <workItem from="1630456819230" duration="1084000" />
+      <workItem from="1630459594094" duration="1648000" />
+      <workItem from="1630474412453" duration="12828000" />
+      <workItem from="1630507078538" duration="11559000" />
+      <workItem from="1630555587068" duration="612000" />
+      <workItem from="1630563232838" duration="178000" />
+      <workItem from="1630732578074" duration="2022000" />
+      <workItem from="1630997531168" duration="1078000" />
+      <workItem from="1631081643169" duration="1335000" />
+      <workItem from="1631149744015" duration="20335000" />
+      <workItem from="1631194031486" duration="4798000" />
+      <workItem from="1631238075110" duration="49739000" />
+      <workItem from="1631440413358" duration="45005000" />
+      <workItem from="1631602070247" duration="3162000" />
+      <workItem from="1631622685180" duration="3075000" />
+      <workItem from="1631681486642" duration="1245000" />
+      <workItem from="1631760152634" duration="290000" />
+      <workItem from="1631796133418" duration="226000" />
+      <workItem from="1632381357025" duration="1259000" />
+      <workItem from="1641523313448" duration="2952000" />
+      <workItem from="1644384566319" duration="4421000" />
+      <workItem from="1644395132232" duration="2837000" />
+      <workItem from="1644398797986" duration="1870000" />
+      <workItem from="1646663053786" duration="54000" />
+      <workItem from="1649229369825" duration="2674000" />
+      <workItem from="1653013317496" duration="730000" />
+      <workItem from="1658117218543" duration="1421000" />
+      <workItem from="1663768976896" duration="898000" />
+      <workItem from="1666014316892" duration="214000" />
+      <workItem from="1666232611809" duration="390000" />
+      <workItem from="1666234435542" duration="613000" />
+      <workItem from="1666235096528" duration="1229000" />
+      <workItem from="1666277272195" duration="1890000" />
+      <workItem from="1666359377535" duration="3355000" />
+      <workItem from="1666770771687" duration="14917000" />
+      <workItem from="1666840685732" duration="15936000" />
+      <workItem from="1666879883172" duration="126000" />
+      <workItem from="1666940291430" duration="10301000" />
+      <workItem from="1667034526115" duration="6189000" />
+      <workItem from="1667056845232" duration="611000" />
+      <workItem from="1667202380364" duration="595000" />
+      <workItem from="1667895494749" duration="13744000" />
+      <workItem from="1667960932807" duration="299000" />
+      <workItem from="1667963401425" duration="2845000" />
+      <workItem from="1667971162028" duration="9341000" />
+      <workItem from="1667985294802" duration="439000" />
+      <workItem from="1667994143908" duration="8862000" />
+      <workItem from="1668042177397" duration="2761000" />
+      <workItem from="1668179115884" duration="5695000" />
+      <workItem from="1668220869306" duration="9104000" />
+      <workItem from="1668250265576" duration="21280000" />
+      <workItem from="1668317838510" duration="8188000" />
+      <workItem from="1668341666475" duration="19588000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1205" y="345" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1668258356658">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state x="1205" y="345" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2752.1112@0.0.2752.1112" timestamp="1668258356658" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom" timestamp="1668406457681">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state width="2753" height="1048" key="GridCell.Tab.0.bottom/0.0.2752.1104@0.0.2752.1104" timestamp="1666365752123" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1668406457681" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.center" timestamp="1668406457681">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state width="2753" height="1048" key="GridCell.Tab.0.center/0.0.2752.1104@0.0.2752.1104" timestamp="1666365752123" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1668406457681" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.left" timestamp="1668406457681">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state width="2753" height="1048" key="GridCell.Tab.0.left/0.0.2752.1104@0.0.2752.1104" timestamp="1666365752123" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1668406457681" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right" timestamp="1668406457681">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state width="2753" height="1048" key="GridCell.Tab.0.right/0.0.2752.1104@0.0.2752.1104" timestamp="1666365752123" />
+    <state width="2753" height="1056" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1668406457681" />
+    <state x="878" y="197" key="SettingsEditor" timestamp="1667963620390">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state x="878" y="196" key="SettingsEditor/0.0.2752.1104@0.0.2752.1104" timestamp="1666232800757" />
+    <state x="878" y="197" key="SettingsEditor/0.0.2752.1112@0.0.2752.1112" timestamp="1667963620390" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/NERs$robertlinear.coverage" NAME="robertlinear Coverage Results" MODIFIED="1629096535431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1630391140978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline.coverage" NAME="mrc_bertline Coverage Results" MODIFIED="1630490572104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$data_process.coverage" NAME="data_process Coverage Results" MODIFIED="1630733325788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$bertcrf.coverage" NAME="bertcrf Coverage Results" MODIFIED="1667910196327" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$bertgrucrf.coverage" NAME="bertgrucrf Coverage Results" MODIFIED="1666364247453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_ns_tiny.coverage" NAME="mrc_span_ns_tiny Coverage Results" MODIFIED="1668357893385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$grucrfix.coverage" NAME="grucrfix Coverage Results" MODIFIED="1666966331234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$robertgrucrfw.coverage" NAME="robertgrucrfw Coverage Results" MODIFIED="1641524965057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con.coverage" NAME="mrc_bertline_con Coverage Results" MODIFIED="1630512278247" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span.coverage" NAME="mrc_span Coverage Results" MODIFIED="1668000690129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con_sp.coverage" NAME="mrc_bertline_con_sp Coverage Results" MODIFIED="1630514453512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$wobertcrf.coverage" NAME="wobertcrf Coverage Results" MODIFIED="1629042534985" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1630402603262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_tiny.coverage" NAME="mrc_span_tiny Coverage Results" MODIFIED="1668221340201" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$bertlinear.coverage" NAME="bertlinear Coverage Results" MODIFIED="1629102368897" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resume" />
+    <SUITE FILE_PATH="coverage/NERs$asdfa.coverage" NAME="asdfa Coverage Results" MODIFIED="1667965442468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$bertlinear__1_.coverage" NAME="bertlinear (1) Coverage Results" MODIFIED="1630378603502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$bertlinearmrc.coverage" NAME="bertlinearmrc Coverage Results" MODIFIED="1630429598493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$tinybertcrf.coverage" NAME="tinybertcrf Coverage Results" MODIFIED="1667979238603" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_sp_tiny.coverage" NAME="mrc_span_sp_tiny Coverage Results" MODIFIED="1668353058801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$grucrfe.coverage" NAME="grucrfe Coverage Results" MODIFIED="1666843483913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$testcompute.coverage" NAME="testcompute Coverage Results" MODIFIED="1668342977680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con1.coverage" NAME="mrc_bertline_con1 Coverage Results" MODIFIED="1630511256726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1630390334827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
+    <SUITE FILE_PATH="coverage/NERs$robertcrf__1_.coverage" NAME="robertcrf (1) Coverage Results" MODIFIED="1629042719507" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$visualize.coverage" NAME="visualize Coverage Results" MODIFIED="1666852051217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_tiny_tape.coverage" NAME="mrc_span_tiny_tape Coverage Results" MODIFIED="1668394650629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$TextLenDistribute.coverage" NAME="TextLenDistribute Coverage Results" MODIFIED="1666277515915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$grucrf.coverage" NAME="grucrf Coverage Results" MODIFIED="1666865655810" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_ns_tiny_tape.coverage" NAME="mrc_span_ns_tiny_tape Coverage Results" MODIFIED="1668394938564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$robertgrucrf.coverage" NAME="robertgrucrf Coverage Results" MODIFIED="1629094043164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1668343161802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_sp.coverage" NAME="mrc_span_sp Coverage Results" MODIFIED="1668266491973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_tape.coverage" NAME="mrc_span_tape Coverage Results" MODIFIED="1668181742573" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$data_process__1_.coverage" NAME="data_process (1) Coverage Results" MODIFIED="1631507914992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_ns.coverage" NAME="mrc_span_ns Coverage Results" MODIFIED="1668319273554" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+  </component>
+</project>
