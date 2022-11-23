@@ -1,2 +1,3 @@
-import numpy as np
-print(np.sqrt(27225))
+from tensorflow import keras
+keras.optimizers.Ada
+keras.initializers.TruncatedNormal

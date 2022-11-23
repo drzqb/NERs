@@ -15,8 +15,9 @@ from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 from tensorflow.keras.initializers import TruncatedNormal
 from tensorflow.keras.losses import BinaryCrossentropy as bce
 from tensorflow.keras.optimizers.schedules import PolynomialDecay
-from official.nlp.optimization import WarmUp, AdamWeightDecay
+# from official.nlp.optimization import WarmUp, AdamWeightDecay
 from OtherUtils import load_vocab
+from transformers.optimization_tf import WarmUp, AdamWeightDecay
 
 import numpy as np
 import sys, os
@@ -840,7 +841,7 @@ class USER:
         history = model.fit(batch_data,
                             epochs=params.epochs,
                             validation_data=dev_data,
-                            callbacks=callbacks
+                            callbacks=callbacks,
                             )
 
         with open(params.check + "/history.txt", "w", encoding="utf-8") as fw:
