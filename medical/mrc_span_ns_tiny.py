@@ -9,13 +9,12 @@ import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Layer, Dense
 from tensorflow.keras.optimizers import Adam
-from transformers.optimization_tf import AdamWeightDecay
 from transformers import TFBertModel, BertTokenizer, BertConfig
 from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
 from tensorflow.keras.initializers import TruncatedNormal
 from tensorflow.keras.losses import BinaryCrossentropy as bce
 from tensorflow.keras.optimizers.schedules import PolynomialDecay
-from official.nlp.optimization import WarmUp, AdamWeightDecay
+from transformers.optimization_tf import WarmUp, AdamWeightDecay
 from OtherUtils import load_vocab
 
 import numpy as np
