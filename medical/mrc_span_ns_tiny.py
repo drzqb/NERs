@@ -115,9 +115,7 @@ class BERT(keras.layers.Layer):
         config = BertConfig.from_pretrained(params.hfmodel)
         config.num_hidden_layers = 2
 
-        self.bert = TFBertModel.from_pretrained(params.hfmodel,
-                                                config=config
-                                                )
+        self.bert = TFBertModel.from_pretrained(params.hfmodel, config=config)
 
         self.tokenizer = BertTokenizer.from_pretrained(params.hfmodel)
 
