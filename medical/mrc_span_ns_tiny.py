@@ -6,14 +6,9 @@
 '''
 
 import tensorflow as tf
-from tensorflow.keras import Model
-from tensorflow.keras.layers import Input, Layer, Dense
-from tensorflow.keras.optimizers import Adam
+from tensorflow import keras
+
 from transformers import TFBertModel, BertTokenizer, BertConfig
-from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint
-from tensorflow.keras.initializers import TruncatedNormal
-from tensorflow.keras.losses import BinaryCrossentropy as bce
-from tensorflow.keras.optimizers.schedules import PolynomialDecay
 from transformers.optimization_tf import WarmUp, AdamWeightDecay
 from OtherUtils import load_vocab
 
@@ -101,7 +96,7 @@ def focal_loss(y_true, y_pred, gamma=2.0):
     return tf.squeeze(loss, axis=-1)
 
 
-class Mask(Layer):
+class Mask(keras.layers.Layer):
     def __init__(self, **kwargs):
         super(Mask, self).__init__(**kwargs)
 
@@ -111,15 +106,16 @@ class Mask(Layer):
         return tf.reduce_sum(sequencemask, axis=-1) - 2
 
 
-class BERT(Layer):
+class BERT(keras.layers.Layer):
     def __init__(self, **kwargs):
         super(BERT, self).__init__(**kwargs)
 
         config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
         config.num_hidden_layers = 2
 
-        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext", config=config)
-        # self.bert = TFBertModel.from_pretrained("uer/chinese_roberta_L-2_H-128")
+        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext",
+                                                config=config
+                                                )
 
         self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
 
@@ -163,7 +159,7 @@ class BERT(Layer):
         return mrc_output
 
 
-# class BERT(Layer):
+# class BERT(keras.layers.Layer):
 #     def __init__(self, **kwargs):
 #         super(BERT, self).__init__(**kwargs)
 #
@@ -201,7 +197,7 @@ class BERT(Layer):
 #         return mrc_output
 
 
-class SplitSequence(Layer):
+class SplitSequence(keras.layers.Layer):
     def __init__(self, **kwargs):
         super(SplitSequence, self).__init__(**kwargs)
 
@@ -209,17 +205,17 @@ class SplitSequence(Layer):
         return x[:, :, 1:-1]
 
 
-# class MRC(Layer):
+# class MRC(keras.layers.Layer):
 #     def __init__(self, **kwargs):
 #         super(MRC, self).__init__(**kwargs)
 #
-#         self.dense_startend = [Dense(2,
+#         self.dense_startend = [keras.layers.Dense(2,
 #                                      kernel_initializer=TruncatedNormal(stddev=0.02),
 #                                      dtype=tf.float32,
 #                                      activation="sigmoid",
 #                                      name='startend' + str(i)) for i in range(params.label_num)]
 #
-#         self.dense_span = Dense(params.label_num,
+#         self.dense_span = keras.layers.Dense(params.label_num,
 #                                 kernel_initializer=TruncatedNormal(stddev=0.02),
 #                                 dtype=tf.float32,
 #                                 activation="sigmoid",
@@ -373,17 +369,17 @@ class SplitSequence(Layer):
 #         return span_predict, start_predict, end_predict, tp, tn, fp
 
 
-# class MRC(Layer):
+# class MRC(keras.layers.Layer):
 #     def __init__(self, **kwargs):
 #         super(MRC, self).__init__(**kwargs)
 #
-#         self.dense_startend = Dense(2,
+#         self.dense_startend = keras.layers.Dense(2,
 #                                     kernel_initializer=TruncatedNormal(stddev=0.02),
 #                                     dtype=tf.float32,
 #                                     activation="sigmoid",
 #                                     name='startend')
 #
-#         self.dense_span = Dense(1,
+#         self.dense_span = keras.layers.Dense(1,
 #                                 kernel_initializer=TruncatedNormal(stddev=0.02),
 #                                 dtype=tf.float32,
 #                                 activation="sigmoid",
@@ -533,25 +529,25 @@ class SplitSequence(Layer):
 #         return span_predict, start_predict, end_predict, tp, tn, fp
 
 
-class MRC(Layer):
+class MRC(keras.layers.Layer):
     def __init__(self, **kwargs):
         super(MRC, self).__init__(**kwargs)
 
-        self.dense_startend = Dense(2,
-                                    kernel_initializer=TruncatedNormal(stddev=0.02),
-                                    dtype=tf.float32,
-                                    activation="sigmoid",
-                                    name='startend')
-        self.dense_ys = Dense(1,
-                              kernel_initializer=TruncatedNormal(stddev=0.02),
-                              dtype=tf.float32,
-                              name='ys')
+        self.dense_startend = keras.layers.Dense(2,
+                                                 kernel_initializer=keras.initializers.TruncatedNormal(stddev=0.02),
+                                                 dtype=tf.float32,
+                                                 activation="sigmoid",
+                                                 name='startend')
+        self.dense_ys = keras.layers.Dense(1,
+                                           kernel_initializer=keras.initializers.TruncatedNormal(stddev=0.02),
+                                           dtype=tf.float32,
+                                           name='ys')
 
-        self.dense_span = Dense(1,
-                                kernel_initializer=TruncatedNormal(stddev=0.02),
-                                dtype=tf.float32,
-                                activation="sigmoid",
-                                name='span')
+        self.dense_span = keras.layers.Dense(1,
+                                             kernel_initializer=keras.initializers.TruncatedNormal(stddev=0.02),
+                                             dtype=tf.float32,
+                                             activation="sigmoid",
+                                             name='span')
 
     def call(self, inputs, **kwargs):
         # x: B*5*N*768 start,end: B*5*N span,val: B*5*N*N seqlen: B
@@ -700,7 +696,7 @@ class MRC(Layer):
         return span_predict, start_predict, end_predict, tp, tn, fp
 
 
-class CheckCallback(Callback):
+class CheckCallback(keras.callbacks.Callback):
     def __init__(self, validation):
         super(CheckCallback, self).__init__()
 
@@ -759,15 +755,15 @@ class USER:
         self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
 
     def build_model(self):
-        sen = Input(shape=[None], name='sen', dtype=tf.int32)
+        sen = keras.layers.Input(shape=[None], name='sen', dtype=tf.int32)
 
-        start = Input(shape=[params.label_num, None], name='start', dtype=tf.int32)
+        start = keras.layers.Input(shape=[params.label_num, None], name='start', dtype=tf.int32)
 
-        end = Input(shape=[params.label_num, None], name='end', dtype=tf.int32)
+        end = keras.layers.Input(shape=[params.label_num, None], name='end', dtype=tf.int32)
 
-        span = Input(shape=[params.label_num, None, None], name='span', dtype=tf.int32)
+        span = keras.layers.Input(shape=[params.label_num, None, None], name='span', dtype=tf.int32)
 
-        val = Input(shape=[params.label_num, None, None], name='val', dtype=tf.int32)
+        val = keras.layers.Input(shape=[params.label_num, None, None], name='val', dtype=tf.int32)
 
         seqlen = Mask(name="mask")(sen)
 
@@ -777,7 +773,7 @@ class USER:
 
         predict = MRC(name="mrc")(inputs=(sequence_split, start, end, span, val, seqlen))
 
-        model = Model(inputs=[sen, start, end, span, val], outputs=predict)
+        model = keras.Model(inputs=[sen, start, end, span, val], outputs=predict)
 
         model.summary()
 
@@ -789,11 +785,11 @@ class USER:
         if params.mode == 'train1':
             model.load_weights(params.check + '/mrc.h5')
 
-        decay_schedule = PolynomialDecay(initial_learning_rate=params.lr,
-                                         decay_steps=params.epochs * params.per_save,
-                                         end_learning_rate=0.0,
-                                         power=1.0,
-                                         cycle=False)
+        decay_schedule = keras.optimizers.schedules.PolynomialDecay(initial_learning_rate=params.lr,
+                                                                    decay_steps=params.epochs * params.per_save,
+                                                                    end_learning_rate=0.0,
+                                                                    power=1.0,
+                                                                    cycle=False)
 
         warmup_schedule = WarmUp(initial_learning_rate=params.lr,
                                  decay_schedule_fn=decay_schedule,
@@ -831,9 +827,9 @@ class USER:
 
         callbacks = [
             # EarlyStopping(monitor='val_acc', patience=3),
-            ModelCheckpoint(filepath=params.check + '/mrc.h5',
-                            monitor='val_acc',
-                            save_best_only=True),
+            keras.callbacks.ModelCheckpoint(filepath=params.check + '/mrc.h5',
+                                            monitor='val_acc',
+                                            save_best_only=True),
             CheckCallback(dev_data)
         ]
 
