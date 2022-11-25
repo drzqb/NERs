@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ec391439-36dc-46e6-ae73-c90d1af257f7" name="默认更改列表" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medical/mrc_span_ns_tiny.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/mrc_span_ns_tiny.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/medical/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/medical/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,28 +93,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="mrc_span_sp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="NERs" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/mrc_span_sp.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="mrc_span_sp_tiny" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="NERs" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,13 +137,35 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="NERs" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/medical" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/medical/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.mrc_span_ns_tiny" />
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.mrc_span_sp_tiny" />
         <item itemvalue="Python.mrc_span_ns_tiny_tape" />
         <item itemvalue="Python.mrc_span_tiny_tape" />
-        <item itemvalue="Python.mrc_span_sp" />
       </list>
     </recent_temporary>
   </component>
@@ -249,6 +249,7 @@
       <workItem from="1669186032510" duration="10105000" />
       <workItem from="1669298233265" duration="1538000" />
       <workItem from="1669342526546" duration="1474000" />
+      <workItem from="1669344846248" duration="451000" />
     </task>
     <servers />
   </component>
@@ -300,7 +301,7 @@
     <SUITE FILE_PATH="coverage/NERs$data_process.coverage" NAME="data_process Coverage Results" MODIFIED="1630733325788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
     <SUITE FILE_PATH="coverage/NERs$bertcrf.coverage" NAME="bertcrf Coverage Results" MODIFIED="1668483593443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resume" />
     <SUITE FILE_PATH="coverage/NERs$bertgrucrf.coverage" NAME="bertgrucrf Coverage Results" MODIFIED="1666364247453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
-    <SUITE FILE_PATH="coverage/NERs$mrc_span_ns_tiny.coverage" NAME="mrc_span_ns_tiny Coverage Results" MODIFIED="1669343970238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$mrc_span_ns_tiny.coverage" NAME="mrc_span_ns_tiny Coverage Results" MODIFIED="1669345527132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$grucrfix.coverage" NAME="grucrfix Coverage Results" MODIFIED="1666966331234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$robertgrucrfw.coverage" NAME="robertgrucrfw Coverage Results" MODIFIED="1641524965057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$mrc_bertline_con.coverage" NAME="mrc_bertline_con Coverage Results" MODIFIED="1630512278247" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MRC" />
@@ -326,7 +327,7 @@
     <SUITE FILE_PATH="coverage/NERs$grucrf.coverage" NAME="grucrf Coverage Results" MODIFIED="1666865655810" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$mrc_span_ns_tiny_tape.coverage" NAME="mrc_span_ns_tiny_tape Coverage Results" MODIFIED="1669298851834" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$robertgrucrf.coverage" NAME="robertgrucrf Coverage Results" MODIFIED="1629094043164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
-    <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1668343161802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
+    <SUITE FILE_PATH="coverage/NERs$test.coverage" NAME="test Coverage Results" MODIFIED="1669344940785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$mrc_span_sp.coverage" NAME="mrc_span_sp Coverage Results" MODIFIED="1669197388751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$mrc_span_tape.coverage" NAME="mrc_span_tape Coverage Results" MODIFIED="1668181742573" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />
     <SUITE FILE_PATH="coverage/NERs$data_process__1_.coverage" NAME="data_process (1) Coverage Results" MODIFIED="1631507914992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/medical" />

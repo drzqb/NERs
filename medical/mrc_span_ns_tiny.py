@@ -29,6 +29,8 @@ parser.add_argument('--label_num', type=int, default=5, help='number of ner labe
 # parser.add_argument('--per_save', type=int, default=3488, help='save model per num')
 parser.add_argument('--per_save', type=int, default=872, help='save model per num for batchsize=8')
 parser.add_argument('--check', type=str, default='model/mrc_span_ns_tiny', help='The path where model saved')
+parser.add_argument('--hfmodel', type=str, default='e:/tools/chinese-roberta-wwm-ext',
+                    help='The path where hugging face model saved')
 parser.add_argument('--mode', type=str, default='train0', help='The mode of train or predict as follows: '
                                                                'train0: begin to train or retrain'
                                                                'tran1:continue to train'
@@ -110,14 +112,14 @@ class BERT(keras.layers.Layer):
     def __init__(self, **kwargs):
         super(BERT, self).__init__(**kwargs)
 
-        config = BertConfig.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        config = BertConfig.from_pretrained(params.hfmodel)
         config.num_hidden_layers = 2
 
-        self.bert = TFBertModel.from_pretrained("hfl/chinese-roberta-wwm-ext",
+        self.bert = TFBertModel.from_pretrained(params.hfmodel,
                                                 config=config
                                                 )
 
-        self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        self.tokenizer = BertTokenizer.from_pretrained(params.hfmodel)
 
         self.mrc = self.tokenizer(["找到所有的治疗方案",
                                    "找到所有的身体部位",
@@ -752,7 +754,7 @@ def querycheck(predict, start_predict, end_predict):
 
 class USER:
     def __init__(self):
-        self.tokenizer = BertTokenizer.from_pretrained("hfl/chinese-roberta-wwm-ext")
+        self.tokenizer = BertTokenizer.from_pretrained(params.hfmodel)
 
     def build_model(self):
         sen = keras.layers.Input(shape=[None], name='sen', dtype=tf.int32)
