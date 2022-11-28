@@ -206,8 +206,6 @@ def train_step(data, model, optimizercrf, optimizerother):
     gradientsother = tape.gradient(loss, other_trainable_variables)
     optimizerother.apply_gradients(zip(gradientsother, other_trainable_variables))
 
-    del tape
-
     return tp, tn, fp, loss, accuracy
 
 
