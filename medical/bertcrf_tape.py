@@ -149,37 +149,6 @@ def PRF(y_pred, y_label, mask):
     return tp, tn, fp
 
 
-class CheckCallback(keras.callbacks.Callback):
-    def __init__(self, validation):
-        super(CheckCallback, self).__init__()
-
-        self.validation_data = validation
-
-    def on_epoch_end(self, epoch, logs=None):
-        tp, tn, fp = 0.0, 0.0, 0.0
-
-        for data in self.validation_data:
-            _, tp_, tn_, fp_ = self.model.predict(data)
-
-            tp += tp_
-            tn += tn_
-            fp += fp_
-
-        precision = tp / (tp + fp + params.eps)
-        recall = tp / (tp + tn + params.eps)
-        F1 = 2.0 * precision * recall / (precision + recall + params.eps)
-
-        logs["precision"] = precision
-        logs["recall"] = recall
-        logs["F1"] = F1
-
-        sys.stdout.write('\nval   - precision: %.4f - recall: %.4f - F1: %.4f\n\n' % (precision, recall, F1))
-        sys.stdout.flush()
-
-        predict, _, _, _ = self.model.predict([sent, tf.ones_like(sent)[:, 1:-1]])
-        querycheck(predict)
-
-
 def querycheck(predict):
     sys.stdout.write('\n')
     sys.stdout.flush()
