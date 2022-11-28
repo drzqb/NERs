@@ -103,15 +103,17 @@ class CRF(keras.layers.Layer):
         super(CRF, self).__init__(**kwargs)
         self.label_dim = label_dim
 
-        self.dense_ner = keras.layers.Dense(label_dim,
+    def build(self, input_shape):
+        self.dense_ner = keras.layers.Dense(self.label_dim,
                                             kernel_initializer=keras.initializers.TruncatedNormal(stddev=0.02),
                                             dtype=tf.float32,
                                             name='ner')
 
         self.transitions = self.add_weight(name='transitions',
-                                           shape=[label_dim, label_dim],
+                                           shape=[self.label_dim, self.label_dim],
                                            initializer='glorot_uniform',
                                            trainable=True)
+        super(CRF, self).build(input_shape)
 
     def get_config(self):
         config = super(CRF, self).get_config().copy()
