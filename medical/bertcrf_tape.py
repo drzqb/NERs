@@ -287,7 +287,7 @@ class USER:
 
                     # 每一步都是显示经过累积后的各项指标，而不是每个batch的各项的指标
                     print(
-                        '\rEpoch %d/%d %d/? -loss: %.6f -acc:%6.1f -precision:%6.1f -recall:%6.1f -F1:%6.1f' % (
+                        '\rEpoch %d/%d %d/? -loss:%.5f -acc:%5.1f -precision:%5.1f -recall:%5.1f -F1:%5.1f' % (
                             epoch + 1, params.epochs, batch + 1,
                             loss_av, 100.0 * acc_av,
                             100.0 * precision, 100.0 * recall, 100.0 * F1,
@@ -305,7 +305,7 @@ class USER:
 
                     # 每一步都是显示经过累积后的各项指标，而不是每个batch的各项的指标
                     print(
-                        '\rEpoch %d/%d %d/%d [%s] -loss: %.6f -acc:%6.1f -precision:%6.1f -recall:%6.1f -F1:%6.1f' % (
+                        '\rEpoch %d/%d %d/%d [%s] -loss:%.5f -acc:%5.1f -precision:%5.1f -recall:%5.1f -F1:%5.1f' % (
                             epoch + 1, params.epochs, batch + 1, per_save,
                             ratiogui,
                             loss_av, 100.0 * acc_av,
@@ -325,7 +325,7 @@ class USER:
                 total_len = 20
                 ratiogui = "=" * total_len
                 print(
-                    '\rEpoch %d/%d %d/%d [%s] -loss: %.6f -acc:%6.1f -precision:%6.1f -recall:%6.1f -F1:%6.1f' % (
+                    '\rEpoch %d/%d %d/%d [%s] -loss:%.5f -acc:%5.1f -precision:%5.1f -recall:%5.1f -F1:%5.1f' % (
                         epoch + 1, params.epochs, per_save, per_save,
                         ratiogui,
                         loss_av, 100.0 * acc_av,
@@ -333,7 +333,7 @@ class USER:
                     ), end=""
                 )
 
-            print(" -val_loss: %.6f -val_acc:%6.1f -val_precision:%6.1f -val_recall:%6.1f -val_F1:%6.1f\n" % (
+            print(" -val_loss:%.5f -val_acc:%5.1f -val_precision:%5.1f -val_recall:%5.1f -val_F1:%5.1f\n" % (
                 loss_val, 100.0 * acc_val,
                 100.0 * precision_val, 100.0 * recall_val, 100.0 * F1_val))
 
