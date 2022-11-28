@@ -2,7 +2,7 @@
     bert + crf for medical ner with tf2.0
     bert通过transformers加载
     tf.GradientTape
-    CRF层100倍BERT层学习率
+    CRF层1000倍BERT层学习率
 '''
 
 import tensorflow as tf
@@ -229,7 +229,7 @@ class USER:
                                          weight_decay_rate=0.01,
                                          epsilon=1.0e-6,
                                          exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
-        optimizercrf = AdamWeightDecay(learning_rate=100.0 * params.lr,
+        optimizercrf = AdamWeightDecay(learning_rate=1000.0 * params.lr,
                                        weight_decay_rate=0.01,
                                        epsilon=1.0e-6,
                                        exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
@@ -414,26 +414,32 @@ class USER:
 
         plt.subplot(gs[1, :2])
         plt.plot(history["precision"])
+        plt.plot(history["val_precision"])
         plt.grid()
         plt.title('precision')
         plt.xlabel('Epoch')
+        plt.legend(['train', 'val'], loc='best', prop={'size': 4})
 
         plt.subplot(gs[1, 2:4])
         plt.plot(history["recall"])
+        plt.plot(history["val_recall"])
         plt.grid()
         plt.title('recall')
         plt.xlabel('Epoch')
+        plt.legend(['train', 'val'], loc='best', prop={'size': 4})
 
         plt.subplot(gs[1, 4:])
         plt.plot(history["F1"])
+        plt.plot(history["val_F1"])
         plt.grid()
-        plt.title('f1')
+        plt.title('F1')
         plt.xlabel('Epoch')
+        plt.legend(['train', 'val'], loc='best', prop={'size': 4})
 
         plt.suptitle("Model Metrics")
 
         plt.tight_layout()
-        plt.savefig("bertcrf_PRF.jpg", dpi=500, bbox_inches="tight")
+        plt.savefig("bertcrf_tape_PRF.jpg", dpi=500, bbox_inches="tight")
 
 
 if __name__ == '__main__':
