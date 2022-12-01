@@ -59,7 +59,7 @@ def batched_data(tfrecord_filename, single_example_parser, batch_size, padded_sh
     if shuffle:
         dataset = dataset.shuffle(buffer_size)
     dataset = dataset.map(single_example_parser) \
-        .padded_batch(batch_size, padded_shapes=padded_shapes, drop_remainder=True) \
+        .padded_batch(batch_size, padded_shapes=padded_shapes) \
         .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
     return dataset
@@ -257,7 +257,7 @@ class USER:
         optimizercrf = AdamWeightDecay(learning_rate=1000.0 * params.lr,
                                        weight_decay_rate=0.01,
                                        epsilon=1.0e-6,
-                                       exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"])
+                                       exclude_from_weight_decay=["bias"])
 
         train_data = batched_data(['data/TFRecordFiles/train.tfrecord'],
                                   single_example_parser,
@@ -268,7 +268,8 @@ class USER:
                                 single_example_parser,
                                 params.batch_size,
                                 padded_shapes={"sen": [-1], "lab": [-1]},
-                                buffer_size=100 * params.batch_size)
+                                buffer_size=100 * params.batch_size,
+                                shuffle=False)
 
         F1_max = 0.0
         per_save = 0
