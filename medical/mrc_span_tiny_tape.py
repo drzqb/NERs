@@ -420,6 +420,12 @@ class USER:
             acc = []
             val = []
 
+            loss_av = 0.0
+            acc_av = 0.0
+            precision = 0.0
+            recall = 0.0
+            F1 = 0.0
+
             for batch, data in enumerate(train_data):
                 tp_, tn_, fp_, loss_, accuracysum_, valsum_ = train_step(data, model, optimizer)
 
@@ -521,11 +527,15 @@ class USER:
         BN = tf.shape(sent)
         B, N = BN[0], BN[1] - 2
 
-        predict, start_predict, end_predict, _, _, _ = model.predict([sent,
-                                                                      tf.ones([B, params.label_num, N], tf.int32),
-                                                                      tf.ones([B, params.label_num, N], tf.int32),
-                                                                      tf.ones([B, params.label_num, N, N], tf.int32),
-                                                                      tf.ones([B, params.label_num, N, N], tf.int32)])
+        predict, start_predict, end_predict, _, _, _, _, _, _ = model.predict([sent,
+                                                                               tf.ones([B, params.label_num, N],
+                                                                                       tf.int32),
+                                                                               tf.ones([B, params.label_num, N],
+                                                                                       tf.int32),
+                                                                               tf.ones([B, params.label_num, N, N],
+                                                                                       tf.int32),
+                                                                               tf.ones([B, params.label_num, N, N],
+                                                                                       tf.int32)])
 
         querycheck(predict, start_predict, end_predict)
 
